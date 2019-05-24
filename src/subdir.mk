@@ -1,6 +1,6 @@
 #src/subdir.mk
 
-OBJECTS +=
+OBJECTS += bin/utils.o
 
 bin/%.o: src/%.c
 	$(info Building file '$@' ...)
