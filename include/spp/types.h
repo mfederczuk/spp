@@ -23,12 +23,12 @@
  * LastEdit: 2019-05-24
  */
 
-#ifndef H650786EB_6C4F_4EE3_9B80_0108CCF43F85
-#define H650786EB_6C4F_4EE3_9B80_0108CCF43F85
+#ifndef _SPP_TYPES_H
+#define _SPP_TYPES_H
 
 #include <wchar.h>
 #include <stdbool.h>
 
 typedef wchar_t* wcstr;
 
-#endif
+#endif /* _SPP_TYPES_H */
