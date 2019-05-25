@@ -20,7 +20,7 @@
  * Header file for typedefs and other stuff.
  *
  * Since: v0.1.0 2019-05-24
- * LastEdit: 2019-05-24
+ * LastEdit: 2019-05-25
  */
 
 #ifndef _SPP_TYPES_H
@@ -29,6 +29,7 @@
 #include <wchar.h>
 #include <stdbool.h>
 
+#define WC_SIZE sizeof(wchar_t)
 typedef wchar_t* wcstr;
 
 #endif /* _SPP_TYPES_H */

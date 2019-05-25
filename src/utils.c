@@ -32,7 +32,6 @@ bool isws(wchar_t wc) {
 }
 
 #define LINE_BUF_GROW 1.5
-#define WC_SIZE sizeof(wchar_t)
 
 wcstr freadline(FILE* stream) {
 	size_t size = 64, len = 0;
@@ -74,5 +73,4 @@ wcstr freadline(FILE* stream) {
 	return line;
 }
 
-#undef WC_SIZE
 #undef LINE_BUF_GROW
