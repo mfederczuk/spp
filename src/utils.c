@@ -37,6 +37,9 @@ bool isws(wchar_t wc) {
 wcstr freadline(FILE* stream) {
 	size_t size = 64, len = 0;
 	wcstr line = malloc(WC_SIZE * size);
+	if(line == NULL) {
+		return NULL;
+	}
 
 	for(wint_t wc = fgetwc(stream);
 	        wc != WEOF && wc != L'\n'; wc = fgetwc(stream)) {
