@@ -20,13 +20,14 @@
  * Header file for utility functions.
  *
  * Since: v0.1.0 2019-05-24
- * LastEdit: 2019-05-24
+ * LastEdit: 2019-05-25
  */
 
 #ifndef _SPP_UTILS_H
 #define _SPP_UTILS_H
 
 #include <spp/types.h>
+#include <stdio.h>
 
 /**
  * Checks if the entered wide char is a whitespace character.
@@ -41,5 +42,20 @@
  * Since: v0.1.0 2019-05-24
  */
 bool isws(wchar_t wc);
+
+/**
+ * Reads the entered stream until an WEOF or a wide LF character is found and
+ * returns that line.
+ *
+ * Param FILE* stream:
+ *     The stream to read from.
+ *
+ * Return: wcstr
+ *     An allocated wide character string or NULL if there was not enough memory
+ *     for the line buffer.
+ *
+ * Since: v0.1.0 2019-05-25
+ */
+wcstr freadline(FILE* stream);
 
 #endif /* _SPP_UTILS_H */
