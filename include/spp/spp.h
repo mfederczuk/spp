@@ -54,9 +54,9 @@
  *     Will be replaced with the directive command argument.
  * 
  * Return: int
- *     0  entered line is a ssp directive, CMD and ARG are allocated
+ *     0  entered line is a spp directive, CMD and ARG are allocated
  *         macro: SPP_CHECKLN_DIR
- *     1  entered line is not a ssp directive, CMD and ARG are unchanged
+ *     1  entered line is not a spp directive, CMD and ARG are unchanged
  *         macro: SPP_CHECKLN_NO_DIR
  *     2  error: CMD and ARG parameters are invalid
  *         macro: SPP_CHECKLN_ERR_INV_ARGS
