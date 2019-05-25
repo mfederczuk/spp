@@ -29,6 +29,11 @@
 #include <spp/types.h>
 #include <stdio.h>
 
+#define SSP_CHECKLN_DIR    0
+#define SSP_CHECKLN_NO_DIR 1
+#define SSP_CHECKLN_ERR_INV_ARGS 2
+#define SSP_CHECKLN_ERR_NO_MEM   3
+
 /**
  * Checks if the entered line contains a valid spp directive and saves the
  * directive command and the argument into the two parameters CMD and ARG.
@@ -49,8 +54,14 @@
  *     Will be replaced with the directive command argument.
  * 
  * Return: int
- *     0  successfull execution
- *     1  unsucessfull execution
+ *     0  entered line is a ssp directive, CMD and ARG are allocated
+ *         macro: SSP_CHECKLN_DIR
+ *     1  entered line is not a ssp directive, CMD and ARG are unchanged
+ *         macro: SSP_CHECKLN_NO_DIR
+ *     2  error: CMD and ARG parameters are invalid
+ *         macro: SSP_CHECKLN_ERR_INV_ARGS
+ *     3  error: not enough memory to allocated for buffers
+ *         macro: SSP_CHECKLN_ERR_NO_MEM
  *
  * Since: v0.1.0 2019-05-25
  */
