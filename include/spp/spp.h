@@ -49,7 +49,7 @@
  *     Will be replaced with the directive command argument.
  * 
  * Return: int
- *     0  succesfull execution
+ *     0  successfull execution
  *     1  unsucessfull execution
  *
  * Since: v0.1.0 2019-05-25
