@@ -4,10 +4,33 @@
 ![version][version-img]
 [![lang: C][lang-c-img]][lang-c-link]
 
-A preprocessor for scripts written in **C**.
+A preprocessor for scripts.
 
 **spp** is mainly supposed to be used to build big scripts that have been split
 up into several pieces.
+
+## Directives ##
+
+The preprocessor directives of **spp** look similiar to the directives of the
+**C** and **C++** preprocessor.
+
+**Synopsis:** `[whitespace]#<command>[<whitespace><argument>]`
+
+_WHITESPACE_ may be either spaces or tabs.  
+_COMMAND_ may be any characters BUT spaces and tabs.  
+_ARGUMENT_ may be ANY character. Note that trailing whitespace will also count
+to the argument.
+
+The following commands are defined:
+
+* `include` `<file>`  
+  Copies _FILE_ into this position of the output.
+* `import` `<file>`  
+  Copies _FILE_ into this position of the output after running **spp** through
+  it.
+* `ignore` and `end-ignore`  
+  Delete this and the following lines from the final output until `end-ignore`
+  is seen.
 
 <!-- Shields -->
 
