@@ -2,6 +2,7 @@
 
 OBJECTS += \
 bin/main.o \
+bin/spp.o  \
 bin/utils.o
 
 bin/%.o: src/%.c
