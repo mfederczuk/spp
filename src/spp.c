@@ -37,8 +37,8 @@
 #define ARG_BUF_GROW 1.25
 
 int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
-	if(cmd == NULL || arg == NULL) return SSP_CHECKLN_ERR_INV_ARGS;
-	if(*cmd != NULL || *arg != NULL) return SSP_CHECKLN_ERR_INV_ARGS;
+	if(cmd == NULL || arg == NULL) return SPP_CHECKLN_ERR_INV_ARGS;
+	if(*cmd != NULL || *arg != NULL) return SPP_CHECKLN_ERR_INV_ARGS;
 
 	size_t lcmd_size = 16, lcmd_len = 0;
 	wcstr lcmd = malloc(WC_SIZE * lcmd_size);
@@ -56,7 +56,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 			} else { // line is no directive
 				free(lcmd);
 				free(larg);
-				return SSP_CHECKLN_NO_DIR;
+				return SPP_CHECKLN_NO_DIR;
 			}
 			break;
 		}
@@ -70,7 +70,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 					if(tmp == NULL) {
 						free(lcmd);
 						free(larg);
-						return SSP_CHECKLN_ERR_NO_MEM;
+						return SPP_CHECKLN_ERR_NO_MEM;
 					}
 					lcmd = tmp;
 				}
@@ -98,7 +98,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 					if(tmp == NULL) {
 						free(lcmd);
 						free(larg);
-						return SSP_CHECKLN_ERR_NO_MEM;
+						return SPP_CHECKLN_ERR_NO_MEM;
 					}
 					larg = tmp;
 				}
@@ -114,7 +114,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 		if(tmp == NULL) {
 			free(lcmd);
 			free(larg);
-			return SSP_CHECKLN_ERR_NO_MEM;
+			return SPP_CHECKLN_ERR_NO_MEM;
 		}
 		lcmd = tmp;
 	}
@@ -126,7 +126,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 		if(tmp == NULL) {
 			free(lcmd);
 			free(larg);
-			return SSP_CHECKLN_ERR_NO_MEM;
+			return SPP_CHECKLN_ERR_NO_MEM;
 		}
 		larg = tmp;
 	}
@@ -135,7 +135,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 
 	*cmd = lcmd;
 	*arg = larg;
-	return SSP_CHECKLN_DIR;
+	return SPP_CHECKLN_DIR;
 }
 
 #undef STEP_PRE_DIR

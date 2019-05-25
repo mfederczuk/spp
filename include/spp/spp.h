@@ -29,10 +29,10 @@
 #include <spp/types.h>
 #include <stdio.h>
 
-#define SSP_CHECKLN_DIR    0
-#define SSP_CHECKLN_NO_DIR 1
-#define SSP_CHECKLN_ERR_INV_ARGS 2
-#define SSP_CHECKLN_ERR_NO_MEM   3
+#define SPP_CHECKLN_DIR    0
+#define SPP_CHECKLN_NO_DIR 1
+#define SPP_CHECKLN_ERR_INV_ARGS 2
+#define SPP_CHECKLN_ERR_NO_MEM   3
 
 /**
  * Checks if the entered line contains a valid spp directive and saves the
@@ -55,13 +55,13 @@
  * 
  * Return: int
  *     0  entered line is a ssp directive, CMD and ARG are allocated
- *         macro: SSP_CHECKLN_DIR
+ *         macro: SPP_CHECKLN_DIR
  *     1  entered line is not a ssp directive, CMD and ARG are unchanged
- *         macro: SSP_CHECKLN_NO_DIR
+ *         macro: SPP_CHECKLN_NO_DIR
  *     2  error: CMD and ARG parameters are invalid
- *         macro: SSP_CHECKLN_ERR_INV_ARGS
+ *         macro: SPP_CHECKLN_ERR_INV_ARGS
  *     3  error: not enough memory to allocated for buffers
- *         macro: SSP_CHECKLN_ERR_NO_MEM
+ *         macro: SPP_CHECKLN_ERR_NO_MEM
  *
  * Since: v0.1.0 2019-05-25
  */
