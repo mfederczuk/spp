@@ -56,14 +56,13 @@
  *     Will be replaced with the directive command argument.
  * 
  * Return: int
- *     0  entered line is a spp directive, CMD and ARG are allocated
- *         macro: SPP_CHECKLN_DIR
- *     1  entered line is not a spp directive, CMD and ARG are unchanged
- *         macro: SPP_CHECKLN_NO_DIR
- *     2  error: CMD and ARG parameters are invalid
- *         macro: SPP_CHECKLN_ERR_INV_ARGS
- *     3  error: not enough memory to allocated for buffers
- *         macro: SPP_CHECKLN_ERR_NO_MEM
+ *     SPP_CHECKLN_DIR           entered line is a spp directive, CMD and ARG
+ *                                are allocated
+ *     SPP_CHECKLN_NO_DIR        entered line is not a spp directive, CMD and
+ *                                ARG are unchanged
+ *     SPP_CHECKLN_ERR_INV_ARGS  error: CMD and ARG parameters are invalid
+ *     SPP_CHECKLN_ERR_NO_MEM    error: not enough memory to allocated for
+ *                                buffers
  *
  * Since: v0.1.0 2019-05-25
  */
