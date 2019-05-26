@@ -155,3 +155,64 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 
 #undef CMD_BUF_GROW
 #undef ARG_BUF_GROW
+
+#define LINE_BUF_GROW 1.25
+#define LINE_BUF_INIT_SIZE 64
+
+int process(FILE* in, FILE* out) {
+	if(in == NULL || out == NULL) return SPP_PROCESS_ERR_INV_ARGS;
+
+	size_t size = LINE_BUF_INIT_SIZE, len = 0;
+	wcstr line = malloc(WC_SIZE * size);
+
+	spp_stat stat = {};
+
+	bool read = true;
+	for(wint_t wc = fgetwc(in);
+	        read; wc = fgetwc(in)) {
+
+		if(wc != WEOF) {
+			// build line
+			if(len + 2 > size) { // grow buffer
+				wcstr tmp = realloc(line, WC_SIZE * (size *= LINE_BUF_GROW));
+				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
+				line = tmp;
+			}
+			line[len] = wc;
+			++len;
+		} else {
+			read = false;
+		}
+
+		if(wc == WEOF || wc == L'\n') {
+			// finish up building line
+			if(len + 1 < size) { // shorten buffer
+				wcstr tmp = realloc(line, WC_SIZE * (len + 1));
+				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
+				line = tmp;
+			}
+			line[len] = L'\0';
+
+			// work with line
+			if(processln(line, out, &stat) == SPP_PROCESSLN_ERR_NO_MEM) {
+				free(line);
+				return SPP_PROCESS_ERR_NO_MEM;
+			}
+
+			// reset line
+			if(size > LINE_BUF_INIT_SIZE) {
+				// shrink buffer to init size if it was grown
+				wcstr tmp = realloc(line, WC_SIZE * (size = LINE_BUF_INIT_SIZE));
+				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
+				line = tmp;
+			}
+			len = 0;
+		}
+	} // end for
+
+	free(line);
+	return SPP_PROCESS_SUCCESS;
+}
+
+#undef LINE_BUF_GROW
+#undef LINE_BUF_INIT_SIZE
