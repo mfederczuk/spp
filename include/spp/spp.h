@@ -20,7 +20,7 @@
  * Header file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-25
+ * LastEdit: 2019-05-26
  */
 
 #ifndef _SPP_SPP_H
@@ -28,6 +28,14 @@
 
 #include <spp/types.h>
 #include <stdio.h>
+
+/**
+ * State data of a single spp session.
+ *
+ * Since: v0.1.0 2019-05-26
+ * LastEdit: 2019-05-26
+ */
+struct spp_stat;
 
 #define SPP_CHECKLN_DIR    0
 #define SPP_CHECKLN_NO_DIR 1
