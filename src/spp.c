@@ -33,6 +33,12 @@ struct spp_stat {
 	bool ignore;
 };
 
+spp_stat init_spp_stat() {
+	return (struct spp_stat){
+		.ignore = false
+	};
+}
+
 #define STEP_PRE_DIR 0 // whitespace before directive
 #define STEP_DIR_CMD 1 // directive command
 #define STEP_DIR_PRE_ARG 2 // whitespace before directive command argument
@@ -165,7 +171,7 @@ int process(FILE* in, FILE* out) {
 	size_t size = LINE_BUF_INIT_SIZE, len = 0;
 	wcstr line = malloc(WC_SIZE * size);
 
-	spp_stat stat = {};
+	spp_stat stat = init_spp_stat();
 
 	bool read = true;
 	for(wint_t wc = fgetwc(in);
