@@ -75,6 +75,32 @@ typedef struct spp_stat spp_stat;
  */
 int checkln(wcstr line, wcstr* cmd, wcstr* arg);
 
+#define SPP_PROCESSLN_SUCCESS 0
+#define SPP_PROCESSLN_ERR_INV_ARGS 1
+#define SPP_PROCESSLN_ERR_NO_MEM   2
+
+/**
+ * Processes a single line and writes it into the OUT stream.
+ *
+ * Param wcstr line:
+ *     Original line to process.
+ *     Will be kept completely unchanged.
+ *
+ * Param FILE* out:
+ *     Stream to write the processed line to.
+ *
+ * Param spp_stat* stat:
+ *     The data of the spp session.
+ *
+ * Return: int
+ *     SPP_PROCESSLN_SUCCESS       successfull execution
+ *     SPP_PROCESSLN_ERR_INV_ARGS  error: OUT or STAT parameters are invalid
+ *     SPP_PROCESSLN_ERR_NO_MEM    error: not enough memory to allocate buffer
+ *
+ * Since: v0.1.0 2019-05-26
+ */
+int processln(wcstr line, FILE* out, spp_stat* stat);
+
 #define SPP_PROCESS_SUCCESS 0
 #define SPP_PROCESS_ERR_INV_ARGS 1
 #define SPP_PROCESS_ERR_NO_MEM   2
