@@ -60,13 +60,16 @@
  *                                are allocated
  *     SPP_CHECKLN_NO_DIR        entered line is not a spp directive, CMD and
  *                                ARG are unchanged
- *     SPP_CHECKLN_ERR_INV_ARGS  error: CMD and ARG parameters are invalid
- *     SPP_CHECKLN_ERR_NO_MEM    error: not enough memory to allocated for
- *                                buffers
+ *     SPP_CHECKLN_ERR_INV_ARGS  error: CMD or ARG parameters are invalid
+ *     SPP_CHECKLN_ERR_NO_MEM    error: not enough memory to allocate buffer
  *
  * Since: v0.1.0 2019-05-25
  */
 int checkln(wcstr line, wcstr* cmd, wcstr* arg);
+
+#define SPP_PROCESS_SUCCESS 0
+#define SPP_PROCESS_ERR_INV_ARGS 1
+#define SPP_PROCESS_ERR_NO_MEM   2
 
 /**
  * Reads and processes every line from the entered IN stream and writes the
@@ -78,9 +81,14 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg);
  * Param FILE* out:
  *     The stream to write the processed output.
  *     Note that the stream will not get flushed.
+ * 
+ * Return: int
+ *     SPP_PROCESS_SUCCESS       successfull execution
+ *     SPP_PROCESS_ERR_INV_ARGS  error: IN or OUT parameters are invalid
+ *     SPP_PROCESS_ERR_NO_MEM    error: not enough memory to allocate buffer
  *
  * Since: v0.1.0 2019-05-26
  */
-void process(FILE* in, FILE* out);
+int process(FILE* in, FILE* out);
 
 #endif /* _SPP_SPP_H */
