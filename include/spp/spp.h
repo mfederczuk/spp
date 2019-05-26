@@ -37,6 +37,16 @@
  */
 typedef struct spp_stat spp_stat;
 
+/**
+ * Returns a spp_stat struct with default initial values.
+ *
+ * Return: spp_stat
+ *     A new, default spp_stat.
+ *
+ * Since: v0.1.0 2019-05-26
+ */
+spp_stat init_spp_stat();
+
 #define SPP_CHECKLN_DIR    0
 #define SPP_CHECKLN_NO_DIR 1
 #define SPP_CHECKLN_ERR_INV_ARGS 2
