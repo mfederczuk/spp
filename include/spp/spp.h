@@ -35,7 +35,7 @@
  * Since: v0.1.0 2019-05-26
  * LastEdit: 2019-05-26
  */
-struct spp_stat;
+typedef struct spp_stat spp_stat;
 
 #define SPP_CHECKLN_DIR    0
 #define SPP_CHECKLN_NO_DIR 1
