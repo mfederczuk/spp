@@ -132,7 +132,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 	}
 
 	if(lcmd_len + 1 < lcmd_size) { // shorten buffer
-		wcstr tmp = realloc(lcmd, WC_SIZE * (lcmd_len + 1));
+		wcstr tmp = realloc(lcmd, WC_SIZE * (lcmd_size = lcmd_len + 1));
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
 			free(larg);
@@ -144,7 +144,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 	lcmd[lcmd_len] = L'\0';
 
 	if(larg_len + 1 < larg_size) { // shorten buffer
-		wcstr tmp = realloc(larg, WC_SIZE * (larg_len + 1));
+		wcstr tmp = realloc(larg, WC_SIZE * (larg_size = larg_len + 1));
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
 			free(larg);
@@ -236,7 +236,7 @@ int process(FILE* in, FILE* out) {
 		if(wc == WEOF || wc == L'\n') {
 			// finish up building line
 			if(len + 1 < size) { // shorten buffer
-				wcstr tmp = realloc(line, WC_SIZE * (len + 1));
+				wcstr tmp = realloc(line, WC_SIZE * (size = len + 1));
 				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
 				line = tmp;
 			}
