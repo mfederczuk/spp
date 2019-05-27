@@ -125,6 +125,12 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 		}
 	}
 
+	if(step == STEP_PRE_DIR) {
+		free(lcmd);
+		free(larg);
+		return SPP_CHECKLN_NO_DIR;
+	}
+
 	if(lcmd_len + 1 < lcmd_size) { // shorten buffer
 		wcstr tmp = realloc(lcmd, WC_SIZE * (lcmd_len + 1));
 		if(tmp == NULL || errno == ENOMEM) {
