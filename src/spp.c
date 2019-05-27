@@ -21,7 +21,7 @@
  * Source file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-26
+ * LastEdit: 2019-05-27
  */
 
 #include <spp/spp.h>
@@ -161,6 +161,43 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 
 #undef CMD_BUF_GROW
 #undef ARG_BUF_GROW
+
+int processln(wcstr line, FILE* out, spp_stat* stat) {
+	if(out == NULL || stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
+
+	wcstr cmd = NULL, arg = NULL;
+	switch(checkln(line, &cmd, &arg)) {
+	case SPP_CHECKLN_DIR: {
+		bool valid_cmd = true;
+
+		if(wcscmp(cmd, L"include") == 0) {
+			// TODO directive include
+		} else if(wcscmp(cmd, L"import") == 0) {
+			// TODO directive import
+		} else if(wcscmp(cmd, L"ignore") == 0) {
+			stat->ignore = true;
+		} else if(wcscmp(cmd, L"end-ignore") == 0) {
+			stat->ignore = false;
+		} else { // no such command; see as non-directive line
+			valid_cmd = false;
+		}
+
+		free(cmd);
+		free(arg);
+
+		// fall through if the command does not exist; output the line normally
+		if(valid_cmd) break;
+	}
+	case SPP_CHECKLN_NO_DIR: {
+		if(!stat->ignore) fputws(line, out);
+		break;
+	}
+	case SPP_CHECKLN_ERR_NO_MEM:
+		return SPP_PROCESSLN_ERR_NO_MEM;
+	}
+
+	return SPP_PROCESSLN_SUCCESS;
+}
 
 #define LINE_BUF_GROW 1.25
 #define LINE_BUF_INIT_SIZE 64
