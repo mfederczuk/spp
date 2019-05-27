@@ -21,11 +21,11 @@
  * Source file for utility functions.
  *
  * Since: v0.1.0 2019-05-24
- * LastEdit: 2019-05-26
+ * LastEdit: 2019-05-27
  */
 
 #include <spp/utils.h>
 
 bool isws(wchar_t wc) {
-	return wc == L' ' || wc == '\r' || wc == L'\t';
+	return wc == L' ' || wc == L'\n' || wc == L'\r' || wc == L'\t';
 }
