@@ -249,6 +249,12 @@ int process(FILE* in, FILE* out) {
 				free(line);
 				return SPP_PROCESS_ERR_NO_MEM;
 			}
+			case SPP_PROCESSLN_ERR_REALPATH: {
+				int tmp = errno;
+				free(line);
+				errno = tmp;
+				return SPP_PROCESS_ERR_REALPATH;
+			}
 			case SPP_PROCESSLN_ERR_STAT: {
 				int tmp = errno;
 				free(line);
