@@ -21,20 +21,21 @@
  * Source file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-27
+ * LastEdit: 2019-05-29
  */
 
 #include <spp/spp.h>
-#include <spp/utils.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
+#include <spp/utils.h>
 
 struct spp_stat {
 	bool ignore;
 };
 
 spp_stat init_spp_stat() {
-	return (struct spp_stat){
+	return (struct spp_stat) {
 		.ignore = false
 	};
 }
@@ -47,22 +48,22 @@ spp_stat init_spp_stat() {
 #define CMD_BUF_GROW 1.25
 #define ARG_BUF_GROW 1.25
 
-int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
+int checkln(cstr line, cstr* cmd, cstr* arg) {
 	if(cmd == NULL || arg == NULL) return SPP_CHECKLN_ERR_INV_ARGS;
 	if(*cmd != NULL || *arg != NULL) return SPP_CHECKLN_ERR_INV_ARGS;
 
 	size_t lcmd_size = 16, lcmd_len = 0;
-	wcstr lcmd = malloc(WC_SIZE * lcmd_size);
+	cstr lcmd = malloc(CHAR_SIZE * lcmd_size);
 	if(lcmd == NULL || errno == ENOMEM) return SPP_CHECKLN_ERR_NO_MEM;
 	size_t larg_size = 16, larg_len = 0;
-	wcstr larg = malloc(WC_SIZE * larg_size);
+	cstr larg = malloc(CHAR_SIZE * larg_size);
 	if(larg == NULL || errno == ENOMEM) {
 		free(lcmd);
 		return SPP_CHECKLN_ERR_NO_MEM;
 	}
 
 	unsigned char step = STEP_PRE_DIR;
-	for(size_t i = 0, l = wcslen(line); i < l; ++i) {
+	for(size_t i = 0, l = strlen(line); i < l; ++i) {
 		switch(step) {
 		case STEP_PRE_DIR: {
 			if(isws(line[i])) { // pre directive whitespace
@@ -81,8 +82,8 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 				step = STEP_DIR_PRE_ARG;
 			} else { // command name continues
 				if(lcmd_len + 2 > lcmd_size) { // grow buffer
-					wcstr tmp = realloc(lcmd,
-					                    WC_SIZE * (lcmd_size *= CMD_BUF_GROW));
+					cstr tmp = realloc(lcmd,
+					                   CHAR_SIZE * (lcmd_size *= CMD_BUF_GROW));
 					if(tmp == NULL || errno == ENOMEM) {
 						free(lcmd);
 						free(larg);
@@ -109,8 +110,8 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 		}
 		case STEP_DIR_ARG: {
 			if(larg_len + 2 > larg_size) { // grow buffer
-				wcstr tmp = realloc(larg,
-				                    WC_SIZE * (larg_size *= ARG_BUF_GROW));
+				cstr tmp = realloc(larg,
+				                   CHAR_SIZE * (larg_size *= ARG_BUF_GROW));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(lcmd);
 					free(larg);
@@ -132,7 +133,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 	}
 
 	if(lcmd_len + 1 < lcmd_size) { // shorten buffer
-		wcstr tmp = realloc(lcmd, WC_SIZE * (lcmd_size = lcmd_len + 1));
+		cstr tmp = realloc(lcmd, CHAR_SIZE * (lcmd_size = lcmd_len + 1));
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
 			free(larg);
@@ -141,10 +142,10 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 		lcmd = tmp;
 	}
 
-	lcmd[lcmd_len] = L'\0';
+	lcmd[lcmd_len] = '\0';
 
 	if(larg_len + 1 < larg_size) { // shorten buffer
-		wcstr tmp = realloc(larg, WC_SIZE * (larg_size = larg_len + 1));
+		cstr tmp = realloc(larg, CHAR_SIZE * (larg_size = larg_len + 1));
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
 			free(larg);
@@ -153,7 +154,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 		larg = tmp;
 	}
 
-	larg[larg_len] = L'\0';
+	larg[larg_len] = '\0';
 
 	*cmd = lcmd;
 	*arg = larg;
@@ -168,21 +169,21 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg) {
 #undef CMD_BUF_GROW
 #undef ARG_BUF_GROW
 
-int processln(wcstr line, FILE* out, spp_stat* stat) {
+int processln(cstr line, FILE* out, spp_stat* stat) {
 	if(out == NULL || stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
 
-	wcstr cmd = NULL, arg = NULL;
+	cstr cmd = NULL, arg = NULL;
 	switch(checkln(line, &cmd, &arg)) {
 	case SPP_CHECKLN_DIR: {
 		bool valid_cmd = true;
 
-		if(wcscmp(cmd, L"include") == 0) {
+		if(strcmp(cmd, "include") == 0) {
 			// TODO directive include
-		} else if(wcscmp(cmd, L"import") == 0) {
+		} else if(strcmp(cmd, "import") == 0) {
 			// TODO directive import
-		} else if(wcscmp(cmd, L"ignore") == 0) {
+		} else if(strcmp(cmd, "ignore") == 0) {
 			stat->ignore = true;
-		} else if(wcscmp(cmd, L"end-ignore") == 0) {
+		} else if(strcmp(cmd, "end-ignore") == 0) {
 			stat->ignore = false;
 		} else { // no such command; see as non-directive line
 			valid_cmd = false;
@@ -195,7 +196,7 @@ int processln(wcstr line, FILE* out, spp_stat* stat) {
 		if(valid_cmd) break;
 	}
 	case SPP_CHECKLN_NO_DIR: {
-		if(!stat->ignore) fputws(line, out);
+		if(!stat->ignore) fputs(line, out);
 		break;
 	}
 	case SPP_CHECKLN_ERR_NO_MEM:
@@ -212,35 +213,35 @@ int process(FILE* in, FILE* out) {
 	if(in == NULL || out == NULL) return SPP_PROCESS_ERR_INV_ARGS;
 
 	size_t size = LINE_BUF_INIT_SIZE, len = 0;
-	wcstr line = malloc(WC_SIZE * size);
+	cstr line = malloc(CHAR_SIZE * size);
 
 	spp_stat stat = init_spp_stat();
 
 	bool read = true;
-	for(wint_t wc = fgetwc(in);
-	        read; wc = fgetwc(in)) {
+	for(int ch = fgetc(in);
+	        read; ch = fgetc(in)) {
 
-		if(wc != WEOF) {
+		if(ch != EOF) {
 			// build line
 			if(len + 2 > size) { // grow buffer
-				wcstr tmp = realloc(line, WC_SIZE * (size *= LINE_BUF_GROW));
+				cstr tmp = realloc(line, CHAR_SIZE * (size *= LINE_BUF_GROW));
 				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
 				line = tmp;
 			}
-			line[len] = wc;
+			line[len] = ch;
 			++len;
 		} else {
 			read = false;
 		}
 
-		if(wc == WEOF || wc == L'\n') {
+		if(ch == EOF || ch == '\n') {
 			// finish up building line
 			if(len + 1 < size) { // shorten buffer
-				wcstr tmp = realloc(line, WC_SIZE * (size = len + 1));
+				cstr tmp = realloc(line, CHAR_SIZE * (size = len + 1));
 				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
 				line = tmp;
 			}
-			line[len] = L'\0';
+			line[len] = '\0';
 
 			// work with line
 			if(processln(line, out, &stat) == SPP_PROCESSLN_ERR_NO_MEM) {
@@ -251,7 +252,7 @@ int process(FILE* in, FILE* out) {
 			// reset line
 			if(size > LINE_BUF_INIT_SIZE) {
 				// shrink buffer to init size if it was grown
-				wcstr tmp = realloc(line, WC_SIZE * (size = LINE_BUF_INIT_SIZE));
+				cstr tmp = realloc(line, CHAR_SIZE * (size = LINE_BUF_INIT_SIZE));
 				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
 				line = tmp;
 			}

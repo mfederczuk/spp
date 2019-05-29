@@ -20,7 +20,7 @@
  * Header file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-26
+ * LastEdit: 2019-05-29
  */
 
 #ifndef _SPP_SPP_H
@@ -64,13 +64,13 @@ spp_stat init_spp_stat();
  * The function will cancel before doing anything if CMD or ARG are NULL
  * pointers or if CMD or ARG are not pointing to NULL pointers.
  *
- * Param wcstr line:
+ * Param cstr line:
  *     The line to check for a spp directive.
  *
- * Param wcstr* cmd:
+ * Param cstr* cmd:
  *     Will be replaced with the directive command name.
  *
- * Param wcstr* arg:
+ * Param cstr* arg:
  *     Will be replaced with the directive command argument.
  * 
  * Return: int
@@ -83,7 +83,7 @@ spp_stat init_spp_stat();
  *
  * Since: v0.1.0 2019-05-25
  */
-int checkln(wcstr line, wcstr* cmd, wcstr* arg);
+int checkln(cstr line, cstr* cmd, cstr* arg);
 
 #define SPP_PROCESSLN_SUCCESS 0
 #define SPP_PROCESSLN_ERR_INV_ARGS 1
@@ -92,7 +92,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg);
 /**
  * Processes a single line and writes it into the OUT stream.
  *
- * Param wcstr line:
+ * Param cstr line:
  *     Original line to process.
  *     Will be kept completely unchanged.
  *
@@ -109,7 +109,7 @@ int checkln(wcstr line, wcstr* cmd, wcstr* arg);
  *
  * Since: v0.1.0 2019-05-26
  */
-int processln(wcstr line, FILE* out, spp_stat* stat);
+int processln(cstr line, FILE* out, spp_stat* stat);
 
 #define SPP_PROCESS_SUCCESS 0
 #define SPP_PROCESS_ERR_INV_ARGS 1

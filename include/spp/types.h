@@ -17,19 +17,18 @@
  */
 // include/spp/types.h
 /*
- * Header file for typedefs and other stuff.
+ * Header file for typedefs and commonly used types.
  *
  * Since: v0.1.0 2019-05-24
- * LastEdit: 2019-05-25
+ * LastEdit: 2019-05-29
  */
 
 #ifndef _SPP_TYPES_H
 #define _SPP_TYPES_H
 
-#include <wchar.h>
-#include <stdbool.h>
+#define CHAR_SIZE sizeof(char)
+typedef char* cstr;
 
-#define WC_SIZE sizeof(wchar_t)
-typedef wchar_t* wcstr;
+#include <stdbool.h>
 
 #endif /* _SPP_TYPES_H */

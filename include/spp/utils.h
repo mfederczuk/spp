@@ -20,7 +20,7 @@
  * Header file for utility functions.
  *
  * Since: v0.1.0 2019-05-24
- * LastEdit: 2019-05-26
+ * LastEdit: 2019-05-29
  */
 
 #ifndef _SPP_UTILS_H
@@ -30,10 +30,10 @@
 #include <stdio.h>
 
 /**
- * Checks if the entered wide char is a whitespace character.
+ * Checks if the entered char is a whitespace character.
  *
- * Param wchar_t wc:
- *     The wide char to check.
+ * Param char ch:
+ *     The character to check.
  *
  * Return: bool
  *     true if the entered character is a whitespace character, false if
@@ -41,6 +41,6 @@
  *
  * Since: v0.1.0 2019-05-24
  */
-bool isws(wchar_t wc);
+bool isws(char ch);
 
 #endif /* _SPP_UTILS_H */
