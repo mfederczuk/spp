@@ -88,6 +88,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
 #define SPP_PROCESSLN_SUCCESS 0
 #define SPP_PROCESSLN_ERR_INV_ARGS 1
 #define SPP_PROCESSLN_ERR_NO_MEM   2
+#define SPP_PROCESSLN_ERR_STAT     3
 
 /**
  * Processes a single line and writes it into the OUT stream.
@@ -106,6 +107,8 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
  *     SPP_PROCESSLN_SUCCESS       successfull execution
  *     SPP_PROCESSLN_ERR_INV_ARGS  error: OUT or STAT parameters are invalid
  *     SPP_PROCESSLN_ERR_NO_MEM    error: not enough memory to allocate buffer
+ *     SPP_PROCESSLN_ERR_STAT      error: a call to stat() failed; errno is set
+ *                                  and should be checked
  *
  * Since: v0.1.0 2019-05-26
  */
@@ -114,6 +117,7 @@ int processln(cstr line, FILE* out, spp_stat* stat);
 #define SPP_PROCESS_SUCCESS 0
 #define SPP_PROCESS_ERR_INV_ARGS 1
 #define SPP_PROCESS_ERR_NO_MEM   2
+#define SPP_PROCESS_ERR_STAT     3
 
 /**
  * Reads and processes every line from the entered IN stream and writes the
@@ -130,6 +134,8 @@ int processln(cstr line, FILE* out, spp_stat* stat);
  *     SPP_PROCESS_SUCCESS       successfull execution
  *     SPP_PROCESS_ERR_INV_ARGS  error: IN or OUT parameters are invalid
  *     SPP_PROCESS_ERR_NO_MEM    error: not enough memory to allocate buffer
+ *     SPP_PROCESS_ERR_STAT      error: a call to stat() failed; errno is set
+ *                                and should be checked
  *
  * Since: v0.1.0 2019-05-26
  */
