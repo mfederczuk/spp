@@ -244,9 +244,17 @@ int process(FILE* in, FILE* out) {
 			line[len] = '\0';
 
 			// work with line
-			if(processln(line, out, &stat) == SPP_PROCESSLN_ERR_NO_MEM) {
+			switch(processln(line, out, &stat)) {
+			case SPP_PROCESSLN_ERR_NO_MEM: {
 				free(line);
 				return SPP_PROCESS_ERR_NO_MEM;
+			}
+			case SPP_PROCESSLN_ERR_STAT: {
+				int tmp = errno;
+				free(line);
+				errno = tmp;
+				return SPP_PROCESS_ERR_STAT;
+			}
 			}
 
 			// reset line
