@@ -112,7 +112,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
  *
  * Since: v0.1.0 2019-05-26
  */
-int processln(cstr line, FILE* out, spp_stat* stat);
+int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
 
 #define SPP_PROCESS_SUCCESS 0
 #define SPP_PROCESS_ERR_INV_ARGS 1

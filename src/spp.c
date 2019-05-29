@@ -169,7 +169,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 #undef CMD_BUF_GROW
 #undef ARG_BUF_GROW
 
-int processln(cstr line, FILE* out, spp_stat* stat) {
+int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 	if(out == NULL || stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
 
 	cstr cmd = NULL, arg = NULL;
@@ -182,9 +182,9 @@ int processln(cstr line, FILE* out, spp_stat* stat) {
 		} else if(strcmp(cmd, "import") == 0) {
 			// TODO directive import
 		} else if(strcmp(cmd, "ignore") == 0) {
-			stat->ignore = true;
+			spp_statbuf->ignore = true;
 		} else if(strcmp(cmd, "end-ignore") == 0) {
-			stat->ignore = false;
+			spp_statbuf->ignore = false;
 		} else { // no such command; see as non-directive line
 			valid_cmd = false;
 		}
@@ -196,7 +196,7 @@ int processln(cstr line, FILE* out, spp_stat* stat) {
 		if(valid_cmd) break;
 	}
 	case SPP_CHECKLN_NO_DIR: {
-		if(!stat->ignore) fputs(line, out);
+		if(!spp_statbuf->ignore) fputs(line, out);
 		break;
 	}
 	case SPP_CHECKLN_ERR_NO_MEM:
