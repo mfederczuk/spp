@@ -88,8 +88,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
 #define SPP_PROCESSLN_SUCCESS 0
 #define SPP_PROCESSLN_ERR_INV_ARGS 1
 #define SPP_PROCESSLN_ERR_NO_MEM   2
-#define SPP_PROCESSLN_ERR_REALPATH 3
-#define SPP_PROCESSLN_ERR_STAT     4
+#define SPP_PROCESSLN_ERR_STAT     3
 
 /**
  * Processes a single line and writes it into the OUT stream.
@@ -108,8 +107,6 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
  *     SPP_PROCESSLN_SUCCESS       successfull execution
  *     SPP_PROCESSLN_ERR_INV_ARGS  error: OUT or STAT parameters are invalid
  *     SPP_PROCESSLN_ERR_NO_MEM    error: not enough memory to allocate buffer
- *     SPP_PROCESSLN_ERR_REALPATH  error: a call to realpath() failed; errno is
- *                                  set and should be checked
  *     SPP_PROCESSLN_ERR_STAT      error: a call to stat() failed; errno is set
  *                                  and should be checked
  *
@@ -120,8 +117,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
 #define SPP_PROCESS_SUCCESS 0
 #define SPP_PROCESS_ERR_INV_ARGS 1
 #define SPP_PROCESS_ERR_NO_MEM   2
-#define SPP_PROCESS_ERR_REALPATH 3
-#define SPP_PROCESS_ERR_STAT     4
+#define SPP_PROCESS_ERR_STAT     3
 
 /**
  * Reads and processes every line from the entered IN stream and writes the
@@ -138,8 +134,6 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
  *     SPP_PROCESS_SUCCESS       successfull execution
  *     SPP_PROCESS_ERR_INV_ARGS  error: IN or OUT parameters are invalid
  *     SPP_PROCESS_ERR_NO_MEM    error: not enough memory to allocate buffer
- *     SPP_PROCESS_ERR_REALPATH  error: a call to realpath() failed; errno is
- *                                set and should be checked
  *     SPP_PROCESS_ERR_STAT      error: a call to stat() failed; errno is set
  *                                and should be checked
  *
