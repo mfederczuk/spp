@@ -109,18 +109,22 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 			break;
 		}
 		case STEP_DIR_ARG: {
-			if(larg_len + 2 > larg_size) { // grow buffer
-				cstr tmp = realloc(larg,
-				                   CHAR_SIZE * (larg_size *= ARG_BUF_GROW));
-				if(tmp == NULL || errno == ENOMEM) {
-					free(lcmd);
-					free(larg);
-					return SPP_CHECKLN_ERR_NO_MEM;
+			if(i + 1 < l && line[i] != '\n') {
+				// only add char if it isn't at the end of the string and it
+				// isn't a newline character
+				if(larg_len + 2 > larg_size) { // grow buffer
+					cstr tmp = realloc(larg,
+					                   CHAR_SIZE * (larg_size *= ARG_BUF_GROW));
+					if(tmp == NULL || errno == ENOMEM) {
+						free(lcmd);
+						free(larg);
+						return SPP_CHECKLN_ERR_NO_MEM;
+					}
+					larg = tmp;
 				}
-				larg = tmp;
+				larg[larg_len] = line[i];
+				++larg_len;
 			}
-			larg[larg_len] = line[i];
-			++larg_len;
 			break;
 		}
 		}
