@@ -270,9 +270,15 @@ int process(FILE* in, FILE* out) {
 				errno = tmp;
 				return SPP_PROCESS_ERR_STAT;
 			}
-			case SPP_PROCESS_ERR_FPUTS: {
+			case SPP_PROCESSLN_ERR_FPUTS: {
 				free(line);
 				return SPP_PROCESS_ERR_FPUTS;
+			}
+			case SPP_PROCESSLN_ERR_FOPEN: {
+				int tmp = errno;
+				free(line);
+				errno = tmp;
+				return SPP_PROCESS_ERR_FOPEN;
 			}
 			}
 
