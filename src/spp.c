@@ -234,7 +234,10 @@ int process(FILE* in, FILE* out) {
 			// build line
 			if(len + 2 > size) { // grow buffer
 				cstr tmp = realloc(line, CHAR_SIZE * (size *= LINE_BUF_GROW));
-				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
+				if(tmp == NULL || errno == ENOMEM) {
+					free(line);
+					return SPP_PROCESS_ERR_NO_MEM;
+				}
 				line = tmp;
 			}
 			line[len] = ch;
@@ -247,7 +250,10 @@ int process(FILE* in, FILE* out) {
 			// finish up building line
 			if(len + 1 < size) { // shorten buffer
 				cstr tmp = realloc(line, CHAR_SIZE * (size = len + 1));
-				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
+				if(tmp == NULL || errno == ENOMEM) {
+					free(line);
+					return SPP_PROCESS_ERR_NO_MEM;
+				}
 				line = tmp;
 			}
 			line[len] = '\0';
@@ -274,7 +280,10 @@ int process(FILE* in, FILE* out) {
 			if(size > LINE_BUF_INIT_SIZE) {
 				// shrink buffer to init size if it was grown
 				cstr tmp = realloc(line, CHAR_SIZE * (size = LINE_BUF_INIT_SIZE));
-				if(tmp == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
+				if(tmp == NULL || errno == ENOMEM) {
+					free(line);
+					return SPP_PROCESS_ERR_NO_MEM;
+				}
 				line = tmp;
 			}
 			len = 0;
