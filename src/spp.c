@@ -29,6 +29,9 @@
 #include <errno.h>
 #include <string.h>
 #include <spp/utils.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 struct spp_stat {
 	bool ignore;
@@ -182,7 +185,43 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 		bool valid_cmd = true;
 
 		if(strcmp(cmd, "include") == 0) {
-			// TODO directive include
+			struct stat statbuf;
+			if(stat(arg, &statbuf) != 0) {
+				switch(errno) {
+				case ENAMETOOLONG:
+				case ENOENT:
+				case ENOTDIR: {
+					// when the path name is too long or the path doesn't exist
+					// we ignore the directive
+					valid_cmd = false;
+					break;
+				}
+				default: {
+					int tmp = errno;
+					free(cmd);
+					free(arg);
+					errno = tmp;
+					return SPP_PROCESSLN_ERR_STAT;
+				}
+				}
+			} else {
+				FILE* file = fopen(arg, "r");
+				if(file == NULL) {
+					int tmp = errno;
+					free(cmd);
+					free(arg);
+					errno = tmp;
+					return SPP_PROCESSLN_ERR_FOPEN;
+				}
+
+				for(int ch = fgetc(file);
+				        ch != EOF; ch = fgetc(file)) {
+
+					fputc(ch, out);
+				}
+
+				fclose(file);
+			}
 		} else if(strcmp(cmd, "import") == 0) {
 			// TODO directive import
 		} else if(strcmp(cmd, "ignore") == 0) {
