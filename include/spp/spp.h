@@ -131,7 +131,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
  * final output to the OUT stream.
  *
  * Param FILE* in:
- *     The stream to read the input from until an WEOF character is encountered.
+ *     The stream to read the input from until an EOF character is encountered.
  *
  * Param FILE* out:
  *     The stream to write the processed output.
