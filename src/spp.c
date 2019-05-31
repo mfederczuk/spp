@@ -277,7 +277,7 @@ int process(FILE* in, FILE* out) {
 			}
 
 			// reset line
-			if(size > LINE_BUF_INIT_SIZE) {
+			if(size != LINE_BUF_INIT_SIZE) {
 				// shrink buffer to init size if it was grown
 				cstr tmp = realloc(line, CHAR_SIZE * (size = LINE_BUF_INIT_SIZE));
 				if(tmp == NULL || errno == ENOMEM) {
