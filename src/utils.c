@@ -21,11 +21,13 @@
  * Source file for utility functions.
  *
  * Since: v0.1.0 2019-05-24
- * LastEdit: 2019-05-29
+ * LastEdit: 2019-05-31
  */
 
 #include <spp/utils.h>
 
 bool isws(char ch) {
-	return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t';
+	return ch == '\t' || ch == '\n'
+	       || ch == '\v' || ch == '\f'
+	       || ch == '\r'  || ch == ' ';
 }
