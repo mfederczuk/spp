@@ -196,8 +196,28 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 	case SPP_CHECKLN_DIR: {
 		bool valid_cmd = true;
 
-		// TODO: use cwd when include file
 		if(strcmp(cmd, "include") == 0) {
+			if(strncmp(arg, "/", 1) != 0) { // if arg does not begin with /
+				size_t pwdlen = strlen(spp_statbuf->pwd),
+				       arglen = strlen(arg);
+
+				cstr tmp = malloc(CHAR_SIZE * (pwdlen + 1 + arglen) + CHAR_SIZE);
+
+				size_t i = 0;
+				for(; i < pwdlen; ++i) {
+					tmp[i] = spp_statbuf->pwd[i];
+				}
+				tmp[i] = '/';
+				++i;
+				for(size_t j = 0; j < arglen; ++j, ++i) {
+					tmp[i] = arg[j];
+				}
+				tmp[i] = '\0';
+
+				free(arg);
+				arg = tmp;
+			}
+
 			struct stat statbuf;
 			if(stat(arg, &statbuf) != 0) {
 				switch(errno) {
