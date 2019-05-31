@@ -20,9 +20,32 @@
  * Main source file for spp.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-25
+ * LastEdit: 2019-05-31
  */
 
+#include <string.h>
+#include <stdio.h>
+#include <spp/spp.h>
+
 int main(int argc, char** argv) {
+	cstr file = NULL;
+
+	if(argc == 2) {
+		if(strcmp(argv[1], "--help") == 0) {
+			printf("help\n");
+			return 0;
+		} else if(strcmp(argv[1], "--version") == 0) {
+			printf("version\n");
+			return 0;
+		} else if(strcmp(argv[1], "-") != 0) {
+			file = argv[1];
+		}
+	} else if(argc == 3 && strcmp(argv[1], "--") == 0) {
+		file = argv[2];
+	} else if(argc > 2) {
+		fprintf(stderr, "%s: too many arguments: %d\n", argv[0], argc - 2);
+		return 4;
+	}
+
 	return 0;
 }
