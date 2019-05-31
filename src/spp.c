@@ -35,12 +35,24 @@
 
 struct spp_stat {
 	bool ignore;
+	cstr pwd;
 };
 
-spp_stat init_spp_stat() {
-	return (struct spp_stat) {
-		.ignore = false
-	};
+void init_spp_stat(spp_stat* stat) {
+	if(stat == NULL) return;
+
+	stat->ignore = false;
+	cstr pwd = getenv("PWD");
+	stat->pwd = malloc(strlen(pwd) + 1);
+	strcpy(stat->pwd, pwd);
+}
+
+void deinit_spp_stat(spp_stat* stat) {
+	if(stat == NULL) return;
+
+	stat->ignore = false;
+	free(stat->pwd);
+	stat->pwd = NULL;
 }
 
 #define STEP_PRE_DIR 0 // whitespace before directive
@@ -184,6 +196,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 	case SPP_CHECKLN_DIR: {
 		bool valid_cmd = true;
 
+		// TODO: use cwd when include file
 		if(strcmp(cmd, "include") == 0) {
 			struct stat statbuf;
 			if(stat(arg, &statbuf) != 0) {
@@ -263,7 +276,8 @@ int process(FILE* in, FILE* out) {
 	size_t size = LINE_BUF_INIT_SIZE, len = 0;
 	cstr line = malloc(CHAR_SIZE * size);
 
-	spp_stat stat = init_spp_stat();
+	spp_stat stat;
+	init_spp_stat(&stat);
 
 	bool read = true;
 	for(int ch = fgetc(in);
@@ -336,6 +350,7 @@ int process(FILE* in, FILE* out) {
 	} // end for
 
 	free(line);
+	deinit_spp_stat(&stat);
 	return SPP_PROCESS_SUCCESS;
 }
 

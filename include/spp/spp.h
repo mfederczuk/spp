@@ -33,19 +33,31 @@
  * State data of a single spp session.
  *
  * Since: v0.1.0 2019-05-26
- * LastEdit: 2019-05-26
  */
 typedef struct spp_stat spp_stat;
 
 /**
- * Returns a spp_stat struct with default initial values.
+ * Initializes the spp_stat structure STAT.
  *
- * Return: spp_stat
- *     A new, default spp_stat.
+ * After you are done working with the struct, you need to call deinit_spp_stat()
+ * on it.
+ *
+ * Param spp_stat* stat:
+ *     The spp_stat to initialize.
  *
  * Since: v0.1.0 2019-05-26
  */
-spp_stat init_spp_stat();
+void init_spp_stat(spp_stat* stat);
+
+/**
+ * Deinitializes the spp_stat struct STAT.
+ *
+ * Param spp_stat* stat:
+ *     The spp_stat to deinitialize.
+ *
+ * Since: v0.1.0 2019-05-31
+ */
+void deinit_spp_stat(spp_stat* stat);
 
 #define SPP_CHECKLN_DIR    0
 #define SPP_CHECKLN_NO_DIR 1
@@ -72,7 +84,7 @@ spp_stat init_spp_stat();
  *
  * Param cstr* arg:
  *     Will be replaced with the directive command argument.
- * 
+ *
  * Return: int
  *     SPP_CHECKLN_DIR           entered line is a spp directive, CMD and ARG
  *                                are allocated
@@ -136,7 +148,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
  * Param FILE* out:
  *     The stream to write the processed output.
  *     Note that the stream will not get flushed.
- * 
+ *
  * Return: int
  *     SPP_PROCESS_SUCCESS       successfull execution
  *     SPP_PROCESS_ERR_INV_ARGS  error: IN or OUT parameters are invalid
