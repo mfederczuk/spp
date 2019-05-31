@@ -20,7 +20,7 @@
  * Header file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-29
+ * LastEdit: 2019-05-31
  */
 
 #ifndef _SPP_SPP_H
@@ -89,6 +89,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
 #define SPP_PROCESSLN_ERR_INV_ARGS 1
 #define SPP_PROCESSLN_ERR_NO_MEM   2
 #define SPP_PROCESSLN_ERR_STAT     3
+#define SPP_PROCESSLN_ERR_FPUTS    4
 
 /**
  * Processes a single line and writes it into the OUT stream.
@@ -109,6 +110,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
  *     SPP_PROCESSLN_ERR_NO_MEM    error: not enough memory to allocate buffer
  *     SPP_PROCESSLN_ERR_STAT      error: a call to stat() failed; errno is set
  *                                  and should be checked
+ *     SPP_PROCESSLN_ERR_FPUTS     error: fputs() returned EOF
  *
  * Since: v0.1.0 2019-05-26
  */
@@ -118,6 +120,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
 #define SPP_PROCESS_ERR_INV_ARGS 1
 #define SPP_PROCESS_ERR_NO_MEM   2
 #define SPP_PROCESS_ERR_STAT     3
+#define SPP_PROCESS_ERR_FPUTS    4
 
 /**
  * Reads and processes every line from the entered IN stream and writes the
@@ -136,6 +139,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
  *     SPP_PROCESS_ERR_NO_MEM    error: not enough memory to allocate buffer
  *     SPP_PROCESS_ERR_STAT      error: a call to stat() failed; errno is set
  *                                and should be checked
+ *     SPP_PROCESSLN_ERR_FPUTS     error: fputs() returned EOF
  *
  * Since: v0.1.0 2019-05-26
  */

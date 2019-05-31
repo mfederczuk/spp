@@ -21,7 +21,7 @@
  * Source file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-29
+ * LastEdit: 2019-05-31
  */
 
 #include <spp/spp.h>
@@ -200,7 +200,12 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 		if(valid_cmd) break;
 	}
 	case SPP_CHECKLN_NO_DIR: {
-		if(!spp_statbuf->ignore) fputs(line, out);
+		if(!spp_statbuf->ignore) {
+			int exc = fputs(line, out);
+			if(exc < 0 || exc == EOF) {
+				return SPP_PROCESSLN_ERR_FPUTS;
+			}
+		}
 		break;
 	}
 	case SPP_CHECKLN_ERR_NO_MEM:
@@ -258,6 +263,10 @@ int process(FILE* in, FILE* out) {
 				free(line);
 				errno = tmp;
 				return SPP_PROCESS_ERR_STAT;
+			}
+			case SPP_PROCESS_ERR_FPUTS: {
+				free(line);
+				return SPP_PROCESS_ERR_FPUTS;
 			}
 			}
 
