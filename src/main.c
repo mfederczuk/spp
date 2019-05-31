@@ -121,7 +121,52 @@ int main(int argc, char** argv) {
 		ins = stdin;
 	}
 
-	// TODO: work with stream
+	switch(process(ins, stdout)) {
+	case SPP_PROCESS_ERR_NO_MEM: {
+		errprintf("%s: not enough memory\n", argv[0]);
+		return 100;
+	}
+	case SPP_PROCESS_ERR_STAT: {
+		switch(errno) {
+		case EACCES: {
+			errprintf("%s: permission denied\n", argv[0]);
+			return 77;
+		}
+		case EBADF:
+		case EFAULT:
+		case EOVERFLOW: {
+			errprintf("%s: input/output error\n", argv[0]);
+			return 74;
+		}
+		case ELOOP: {
+			errprintf("%s: %s: too many symbolic links encountered\n",
+			          argv[0], file);
+			return 48;
+		}
+		case ENOMEM: {
+			errprintf("%s: not enough memory\n", argv[0]);
+			return 100;
+		}
+
+		default: {
+			errprintf("%s: unknown error\n", argv[0]);
+			return 125;
+		}
+		}
+	}
+	case SPP_PROCESS_ERR_FPUTS: {
+		errprintf("%s: input/output error", argv[0]);
+		return 74;
+	}
+	case SPP_PROCESS_ERR_FOPEN: {
+		if(errno == ENOMEM) {
+			errprintf("%s: not enough memory\n", argv[0]);
+			return 100;
+		}
+		perror(argv[0]);
+		return 1;
+	}
+	}
 
 	if(file != NULL && fclose(ins) == EOF) {
 		// same thing as with fopen(); too many errno possibilies
