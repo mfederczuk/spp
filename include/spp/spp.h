@@ -20,7 +20,7 @@
  * Header file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-31
+ * LastEdit: 2019-06-02
  */
 
 #ifndef _SPP_SPP_H
@@ -42,12 +42,18 @@ typedef struct spp_stat spp_stat;
  * After you are done working with the struct, you need to call deinit_spp_stat()
  * on it.
  *
+ * When not enough memory is available, 1 is returned and the spp_stat struct
+ * STAT should not be used.
+ *
  * Param spp_stat* stat:
  *     The spp_stat to initialize.
  *
+ * Return: int
+ *     When a memory error occurs, 1, otherwise, on success, 0.
+ *
  * Since: v0.1.0 2019-05-26
  */
-void init_spp_stat(spp_stat* stat);
+int init_spp_stat(spp_stat* stat);
 
 /**
  * Deinitializes the spp_stat struct STAT.

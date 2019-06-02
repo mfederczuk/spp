@@ -21,7 +21,7 @@
  * Source file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-31
+ * LastEdit: 2019-06-02
  */
 
 #include <spp/spp.h>
@@ -38,12 +38,16 @@ struct spp_stat {
 	cstr pwd;
 };
 
-void init_spp_stat(spp_stat* stat) {
+int init_spp_stat(spp_stat* stat) {
 	if(stat == NULL) return;
 
 	stat->ignore = false;
 	cstr pwd = getenv("PWD");
+
+	errno = 0;
 	stat->pwd = malloc(strlen(pwd) + 1);
+	if(stat->pwd == NULL || errno == ENOMEM) return 1;
+
 	strcpy(stat->pwd, pwd);
 }
 
@@ -68,9 +72,12 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 	if(*cmd != NULL || *arg != NULL) return SPP_CHECKLN_ERR_INV_ARGS;
 
 	size_t lcmd_size = 16, lcmd_len = 0;
+	errno = 0;
 	cstr lcmd = malloc(CHAR_SIZE * lcmd_size);
 	if(lcmd == NULL || errno == ENOMEM) return SPP_CHECKLN_ERR_NO_MEM;
+
 	size_t larg_size = 16, larg_len = 0;
+	errno = 0;
 	cstr larg = malloc(CHAR_SIZE * larg_size);
 	if(larg == NULL || errno == ENOMEM) {
 		free(lcmd);
@@ -97,6 +104,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 				step = STEP_DIR_PRE_ARG;
 			} else { // command name continues
 				if(lcmd_len + (CHAR_SIZE * 2) > lcmd_size) { // grow buffer
+					errno = 0;
 					cstr tmp = realloc(lcmd,
 					                   CHAR_SIZE * (lcmd_size *= CMD_BUF_GROW));
 					if(tmp == NULL || errno == ENOMEM) {
@@ -128,6 +136,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 				// only add char if it isn't at the end of the string and it
 				// isn't a newline character
 				if(larg_len + (CHAR_SIZE * 2) > larg_size) { // grow buffer
+					errno = 0;
 					cstr tmp = realloc(larg,
 					                   CHAR_SIZE * (larg_size *= ARG_BUF_GROW));
 					if(tmp == NULL || errno == ENOMEM) {
@@ -152,6 +161,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 	}
 
 	if(lcmd_len + CHAR_SIZE < lcmd_size) { // shorten buffer
+		errno = 0;
 		cstr tmp = realloc(lcmd, CHAR_SIZE * (lcmd_size = lcmd_len + CHAR_SIZE));
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
@@ -164,6 +174,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 	lcmd[lcmd_len] = '\0';
 
 	if(larg_len + CHAR_SIZE < larg_size) { // shorten buffer
+		errno = 0;
 		cstr tmp = realloc(larg, CHAR_SIZE * (larg_size = larg_len + CHAR_SIZE));
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
@@ -201,7 +212,13 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 				size_t pwdlen = strlen(spp_statbuf->pwd),
 				       arglen = strlen(arg);
 
+				errno = 0;
 				cstr tmp = malloc(CHAR_SIZE * (pwdlen + 1 + arglen) + CHAR_SIZE);
+				if(tmp == NULL || errno == ENOMEM) {
+					free(cmd);
+					free(arg);
+					return SPP_PROCESSLN_ERR_NO_MEM;
+				}
 
 				size_t i = 0;
 				for(; i < pwdlen; ++i) {
@@ -219,6 +236,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 			}
 
 			struct stat statbuf;
+			errno = 0;
 			if(stat(arg, &statbuf) != 0) {
 				switch(errno) {
 				case ENAMETOOLONG:
@@ -238,6 +256,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 				}
 				}
 			} else {
+				errno = 0;
 				FILE* file = fopen(arg, "r");
 				if(file == NULL) {
 					int tmp = errno;
@@ -273,6 +292,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 	}
 	case SPP_CHECKLN_NO_DIR: {
 		if(!spp_statbuf->ignore) {
+			errno = 0;
 			int exc = fputs(line, out);
 			if(exc < 0 || exc == EOF) {
 				return SPP_PROCESSLN_ERR_FPUTS;
@@ -294,7 +314,9 @@ int process(FILE* in, FILE* out) {
 	if(in == NULL || out == NULL) return SPP_PROCESS_ERR_INV_ARGS;
 
 	size_t size = LINE_BUF_INIT_SIZE, len = 0;
+	errno = 0;
 	cstr line = malloc(CHAR_SIZE * size);
+	if(line == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
 
 	spp_stat stat;
 	init_spp_stat(&stat);
@@ -306,6 +328,7 @@ int process(FILE* in, FILE* out) {
 		if(ch != EOF) {
 			// build line
 			if(len + (CHAR_SIZE * 2) > size) { // grow buffer
+				errno = 0;
 				cstr tmp = realloc(line, CHAR_SIZE * (size *= LINE_BUF_GROW));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
@@ -322,6 +345,7 @@ int process(FILE* in, FILE* out) {
 		if(ch == EOF || ch == '\n') {
 			// finish up building line
 			if(len + CHAR_SIZE < size) { // shorten buffer
+				errno = 0;
 				cstr tmp = realloc(line, CHAR_SIZE * (size = len + CHAR_SIZE));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
@@ -332,6 +356,7 @@ int process(FILE* in, FILE* out) {
 			line[len] = '\0';
 
 			// work with line
+			errno = 0;
 			switch(processln(line, out, &stat)) {
 			case SPP_PROCESSLN_ERR_NO_MEM: {
 				free(line);
@@ -358,6 +383,7 @@ int process(FILE* in, FILE* out) {
 			// reset line
 			if(size != LINE_BUF_INIT_SIZE) {
 				// shrink buffer to init size if it was grown
+				errno = 0;
 				cstr tmp = realloc(line, CHAR_SIZE * (size = LINE_BUF_INIT_SIZE));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
