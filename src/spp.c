@@ -323,7 +323,7 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 #define LINE_BUF_GROW 1.25
 #define LINE_BUF_INIT_SIZE 64
 
-int process(FILE* in, FILE* out) {
+int process(FILE* in, FILE* out, cstr pwd) {
 	if(in == NULL || out == NULL) return SPP_PROCESS_ERR_INV_ARGS;
 
 	size_t size = LINE_BUF_INIT_SIZE, len = 0;
@@ -336,6 +336,8 @@ int process(FILE* in, FILE* out) {
 		free(line);
 		return SPP_PROCESS_ERR_NO_MEM;
 	}
+
+	if(pwd != NULL) spp_stat_set_pwd(&stat, pwd);
 
 	bool read = true;
 	for(int ch = fgetc(in);

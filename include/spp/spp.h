@@ -20,7 +20,7 @@
  * Header file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-02
+ * LastEdit: 2019-06-03
  */
 
 #ifndef _SPP_SPP_H
@@ -57,7 +57,7 @@ int init_spp_stat(spp_stat* stat);
 
 /**
  * Changes the private working directory of the the spp_stat structure.
- * 
+ *
  * When not enough memory is available, 1 is returned and the working directory
  * will not be changed.
  *
@@ -174,6 +174,11 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
  *     The stream to write the processed output.
  *     Note that the stream will not get flushed.
  *
+ * Param cstr pwd:
+ *     The directory to set the private working directory of the internal
+ *     spp_stat structure to.
+ *     Pass NULL to not change it.
+ *
  * Return: int
  *     SPP_PROCESS_SUCCESS       successfull execution
  *     SPP_PROCESS_ERR_INV_ARGS  error: IN or OUT parameters are invalid
@@ -186,6 +191,6 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
  *
  * Since: v0.1.0 2019-05-26
  */
-int process(FILE* in, FILE* out);
+int process(FILE* in, FILE* out, cstr pwd);
 
 #endif /* _SPP_SPP_H */
