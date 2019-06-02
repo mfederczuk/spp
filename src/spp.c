@@ -332,7 +332,10 @@ int process(FILE* in, FILE* out) {
 	if(line == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
 
 	spp_stat stat;
-	init_spp_stat(&stat);
+	if(init_spp_stat(&stat) == 1) {
+		free(line);
+		return SPP_PROCESS_ERR_NO_MEM;
+	}
 
 	bool read = true;
 	for(int ch = fgetc(in);
