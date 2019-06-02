@@ -56,6 +56,25 @@ typedef struct spp_stat spp_stat;
 int init_spp_stat(spp_stat* stat);
 
 /**
+ * Changes the private working directory of the the spp_stat structure.
+ * 
+ * When not enough memory is available, 1 is returned and the working directory
+ * will not be changed.
+ *
+ * Param spp_stat* stat:
+ *     The spp_stat to change the private working directory of.
+ *
+ * Param cstr pwd:
+ *     The new private working directory.
+ *
+ * Return: int
+ *     When a memory error occurs, 1, otherwise, on success, 0.
+ *
+ * Since: v0.1.0 2019-06-02
+ */
+int spp_stat_set_pwd(spp_stat* stat, cstr pwd);
+
+/**
  * Deinitializes the spp_stat struct STAT.
  *
  * Param spp_stat* stat:

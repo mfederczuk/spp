@@ -51,6 +51,19 @@ int init_spp_stat(spp_stat* stat) {
 	strcpy(stat->pwd, pwd);
 }
 
+int spp_stat_set_pwd(spp_stat* stat, cstr pwd) {
+	if(stat == NULL) return;
+
+	if(strlen(stat->pwd) != strlen(pwd)) {
+		errno = 0;
+		cstr tmp = realloc(stat->pwd, CHAR_SIZE * (strlen(pwd) + 1));
+		if(tmp == NULL || errno == ENOMEM) return 1;
+		stat->pwd = pwd;
+	}
+
+	strcpy(stat->pwd, pwd);
+}
+
 void deinit_spp_stat(spp_stat* stat) {
 	if(stat == NULL) return;
 
