@@ -21,7 +21,7 @@
  * Source file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-02
+ * LastEdit: 2019-06-03
  */
 
 #include <spp/spp.h>
@@ -39,7 +39,7 @@ struct spp_stat {
 };
 
 int init_spp_stat(spp_stat* stat) {
-	if(stat == NULL) return;
+	if(stat == NULL) return 0;
 
 	stat->ignore = false;
 	cstr pwd = getenv("PWD");
@@ -52,7 +52,7 @@ int init_spp_stat(spp_stat* stat) {
 }
 
 int spp_stat_set_pwd(spp_stat* stat, cstr pwd) {
-	if(stat == NULL) return;
+	if(stat == NULL) return 0;
 
 	if(strlen(stat->pwd) != strlen(pwd)) {
 		errno = 0;
