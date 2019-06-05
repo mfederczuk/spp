@@ -41,18 +41,18 @@
 #define CMD_BUF_GROW 1.25
 #define ARG_BUF_GROW 1.25
 
-int checkln(cstr line, cstr* cmd, cstr* arg) {
+int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 	if(cmd == NULL || arg == NULL) return SPP_CHECKLN_ERR_INV_ARGS;
 	if(*cmd != NULL || *arg != NULL) return SPP_CHECKLN_ERR_INV_ARGS;
 
 	size_t lcmd_size = 16, lcmd_len = 0;
 	errno = 0;
-	cstr lcmd = malloc(CHAR_SIZE * lcmd_size);
+	cstr_t lcmd = malloc(CHAR_SIZE * lcmd_size);
 	if(lcmd == NULL || errno == ENOMEM) return SPP_CHECKLN_ERR_NO_MEM;
 
 	size_t larg_size = 16, larg_len = 0;
 	errno = 0;
-	cstr larg = malloc(CHAR_SIZE * larg_size);
+	cstr_t larg = malloc(CHAR_SIZE * larg_size);
 	if(larg == NULL || errno == ENOMEM) {
 		free(lcmd);
 		return SPP_CHECKLN_ERR_NO_MEM;
@@ -79,7 +79,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 			} else { // command name continues
 				if(lcmd_len + (CHAR_SIZE * 2) > lcmd_size) { // grow buffer
 					errno = 0;
-					cstr tmp = realloc(lcmd,
+					cstr_t tmp = realloc(lcmd,
 					                   CHAR_SIZE * (lcmd_size *= CMD_BUF_GROW));
 					if(tmp == NULL || errno == ENOMEM) {
 						free(lcmd);
@@ -111,7 +111,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 				// isn't a newline character
 				if(larg_len + (CHAR_SIZE * 2) > larg_size) { // grow buffer
 					errno = 0;
-					cstr tmp = realloc(larg,
+					cstr_t tmp = realloc(larg,
 					                   CHAR_SIZE * (larg_size *= ARG_BUF_GROW));
 					if(tmp == NULL || errno == ENOMEM) {
 						free(lcmd);
@@ -136,7 +136,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 
 	if(lcmd_len + CHAR_SIZE < lcmd_size) { // shorten buffer
 		errno = 0;
-		cstr tmp = realloc(lcmd, CHAR_SIZE * (lcmd_size = lcmd_len + CHAR_SIZE));
+		cstr_t tmp = realloc(lcmd, CHAR_SIZE * (lcmd_size = lcmd_len + CHAR_SIZE));
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
 			free(larg);
@@ -149,7 +149,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 
 	if(larg_len + CHAR_SIZE < larg_size) { // shorten buffer
 		errno = 0;
-		cstr tmp = realloc(larg, CHAR_SIZE * (larg_size = larg_len + CHAR_SIZE));
+		cstr_t tmp = realloc(larg, CHAR_SIZE * (larg_size = larg_len + CHAR_SIZE));
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
 			free(larg);
@@ -173,10 +173,10 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 #undef CMD_BUF_GROW
 #undef ARG_BUF_GROW
 
-int processln(cstr line, FILE* out, struct spp_stat* spp_statbuf) {
+int processln(cstr_t line, FILE* out, struct spp_stat* spp_statbuf) {
 	if(out == NULL || stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
 
-	cstr cmd = NULL, arg = NULL;
+	cstr_t cmd = NULL, arg = NULL;
 	switch(checkln(line, &cmd, &arg)) {
 	case SPP_CHECKLN_DIR: {
 		bool valid_cmd = true;
@@ -187,7 +187,7 @@ int processln(cstr line, FILE* out, struct spp_stat* spp_statbuf) {
 				       arglen = strlen(arg);
 
 				errno = 0;
-				cstr tmp = malloc(CHAR_SIZE * (pwdlen + 1 + arglen) + CHAR_SIZE);
+				cstr_t tmp = malloc(CHAR_SIZE * (pwdlen + 1 + arglen) + CHAR_SIZE);
 				if(tmp == NULL || errno == ENOMEM) {
 					free(cmd);
 					free(arg);
@@ -284,13 +284,13 @@ int processln(cstr line, FILE* out, struct spp_stat* spp_statbuf) {
 #define LINE_BUF_GROW 1.25
 #define LINE_BUF_INIT_SIZE 64
 
-int process(FILE* in, FILE* out, cstr pwd) {
+int process(FILE* in, FILE* out, cstr_t pwd) {
 	if(in == NULL || out == NULL) return SPP_PROCESS_ERR_INV_ARGS;
 
 	// initial allocation for the line buffer
 	size_t size = LINE_BUF_INIT_SIZE, len = 0;
 	errno = 0;
-	cstr line = malloc(CHAR_SIZE * size);
+	cstr_t line = malloc(CHAR_SIZE * size);
 	if(line == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
 
 	// creating the spp_stat struct
@@ -319,7 +319,7 @@ int process(FILE* in, FILE* out, cstr pwd) {
 			// build line
 			if(len + (CHAR_SIZE * 2) > size) { // grow buffer
 				errno = 0;
-				cstr tmp = realloc(line, CHAR_SIZE * (size *= LINE_BUF_GROW));
+				cstr_t tmp = realloc(line, CHAR_SIZE * (size *= LINE_BUF_GROW));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
 					free(stat.pwd);
@@ -337,7 +337,7 @@ int process(FILE* in, FILE* out, cstr pwd) {
 			// finish up building line
 			if(len + CHAR_SIZE < size) { // shorten buffer
 				errno = 0;
-				cstr tmp = realloc(line, CHAR_SIZE * (size = len + CHAR_SIZE));
+				cstr_t tmp = realloc(line, CHAR_SIZE * (size = len + CHAR_SIZE));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
 					free(stat.pwd);
@@ -380,7 +380,7 @@ int process(FILE* in, FILE* out, cstr pwd) {
 			if(size != LINE_BUF_INIT_SIZE) {
 				// shrink buffer to init size if it was grown
 				errno = 0;
-				cstr tmp = realloc(line, CHAR_SIZE * (size = LINE_BUF_INIT_SIZE));
+				cstr_t tmp = realloc(line, CHAR_SIZE * (size = LINE_BUF_INIT_SIZE));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
 					free(stat.pwd);

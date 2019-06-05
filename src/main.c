@@ -20,7 +20,7 @@
  * Main source file for spp.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-03
+ * LastEdit: 2019-06-05
  */
 
 #include <string.h>
@@ -41,7 +41,7 @@
  */
 
 int main(int argc, char** argv) {
-	cstr file = NULL;
+	cstr_t file = NULL;
 
 	if(argc == 2) {
 		if(strcmp(argv[1], "--help") == 0) {
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 	}
 
 	FILE* ins = NULL;
-	cstr pwd = NULL;
+	cstr_t pwd = NULL;
 
 	if(file != NULL) {
 		struct stat sb;
@@ -122,13 +122,13 @@ int main(int argc, char** argv) {
 		}
 
 		errno = 0;
-		cstr path = realpath(file, NULL);
+		cstr_t path = realpath(file, NULL);
 		if(path == NULL) {
 			// TODO: realpath() error handling
 			return 1;
 		}
 
-		cstr dir = dirname(path);
+		cstr_t dir = dirname(path);
 		pwd = malloc(CHAR_SIZE * (strlen(dir) + 1));
 		strcpy(pwd, dir);
 

@@ -20,14 +20,14 @@
  * Header file for typedefs and commonly used types.
  *
  * Since: v0.1.0 2019-05-24
- * LastEdit: 2019-05-29
+ * LastEdit: 2019-06-05
  */
 
 #ifndef _SPP_TYPES_H
 #define _SPP_TYPES_H
 
 #define CHAR_SIZE sizeof(char)
-typedef char* cstr;
+typedef char* cstr_t;
 
 #include <stdbool.h>
 

@@ -36,7 +36,7 @@
  */
 struct spp_stat {
 	bool ignore;
-	cstr pwd;
+	cstr_t pwd;
 };
 
 #define SPP_CHECKLN_DIR    0
@@ -56,13 +56,13 @@ struct spp_stat {
  * The function will cancel before doing anything if CMD or ARG are NULL
  * pointers or if CMD or ARG are not pointing to NULL pointers.
  *
- * Param cstr line:
+ * Param cstr_t line:
  *     The line to check for a spp directive.
  *
- * Param cstr* cmd:
+ * Param cstr_t* cmd:
  *     Will be replaced with the directive command name.
  *
- * Param cstr* arg:
+ * Param cstr_t* arg:
  *     Will be replaced with the directive command argument.
  *
  * Return: int
@@ -75,7 +75,7 @@ struct spp_stat {
  *
  * Since: v0.1.0 2019-05-25
  */
-int checkln(cstr line, cstr* cmd, cstr* arg);
+int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg);
 
 #define SPP_PROCESSLN_SUCCESS 0
 #define SPP_PROCESSLN_ERR_INV_ARGS 1
@@ -87,7 +87,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
 /**
  * Processes a single line and writes it into the OUT stream.
  *
- * Param cstr line:
+ * Param cstr_t line:
  *     Original line to process.
  *     Will be kept completely unchanged.
  *
@@ -109,7 +109,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
  *
  * Since: v0.1.0 2019-05-26
  */
-int processln(cstr line, FILE* out, struct spp_stat* spp_statbuf);
+int processln(cstr_t line, FILE* out, struct spp_stat* spp_statbuf);
 
 #define SPP_PROCESS_SUCCESS 0
 #define SPP_PROCESS_ERR_INV_ARGS 1
@@ -129,7 +129,7 @@ int processln(cstr line, FILE* out, struct spp_stat* spp_statbuf);
  *     The stream to write the processed output.
  *     Note that the stream will not get flushed.
  *
- * Param cstr pwd:
+ * Param cstr_t pwd:
  *     The directory to set the private working directory of the internal
  *     spp_stat structure to.
  *     Pass NULL to not change it.
@@ -146,6 +146,6 @@ int processln(cstr line, FILE* out, struct spp_stat* spp_statbuf);
  *
  * Since: v0.1.0 2019-05-26
  */
-int process(FILE* in, FILE* out, cstr pwd);
+int process(FILE* in, FILE* out, cstr_t pwd);
 
 #endif /* _SPP_SPP_H */
