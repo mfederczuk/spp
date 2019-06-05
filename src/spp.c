@@ -21,7 +21,7 @@
  * Source file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-03
+ * LastEdit: 2019-06-05
  */
 
 #include <spp/spp.h>
@@ -32,45 +32,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
-struct spp_stat {
-	bool ignore;
-	cstr pwd;
-};
-
-int init_spp_stat(spp_stat* stat) {
-	if(stat == NULL) return 0;
-
-	stat->ignore = false;
-	cstr pwd = getenv("PWD");
-
-	errno = 0;
-	stat->pwd = malloc(strlen(pwd) + 1);
-	if(stat->pwd == NULL || errno == ENOMEM) return 1;
-
-	strcpy(stat->pwd, pwd);
-}
-
-int spp_stat_set_pwd(spp_stat* stat, cstr pwd) {
-	if(stat == NULL) return 0;
-
-	if(strlen(stat->pwd) != strlen(pwd)) {
-		errno = 0;
-		cstr tmp = realloc(stat->pwd, CHAR_SIZE * (strlen(pwd) + 1));
-		if(tmp == NULL || errno == ENOMEM) return 1;
-		stat->pwd = pwd;
-	}
-
-	strcpy(stat->pwd, pwd);
-}
-
-void deinit_spp_stat(spp_stat* stat) {
-	if(stat == NULL) return;
-
-	stat->ignore = false;
-	free(stat->pwd);
-	stat->pwd = NULL;
-}
 
 #define STEP_PRE_DIR 0 // whitespace before directive
 #define STEP_DIR_CMD 1 // directive command
@@ -212,7 +173,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg) {
 #undef CMD_BUF_GROW
 #undef ARG_BUF_GROW
 
-int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
+int processln(cstr line, FILE* out, struct spp_stat* spp_statbuf) {
 	if(out == NULL || stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
 
 	cstr cmd = NULL, arg = NULL;
@@ -326,19 +287,30 @@ int processln(cstr line, FILE* out, spp_stat* spp_statbuf) {
 int process(FILE* in, FILE* out, cstr pwd) {
 	if(in == NULL || out == NULL) return SPP_PROCESS_ERR_INV_ARGS;
 
+	// initial allocation for the line buffer
 	size_t size = LINE_BUF_INIT_SIZE, len = 0;
 	errno = 0;
 	cstr line = malloc(CHAR_SIZE * size);
 	if(line == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
 
-	spp_stat stat;
-	if(init_spp_stat(&stat) == 1) {
+	// creating the spp_stat struct
+	struct spp_stat stat = {
+		.ignore = false,
+		.pwd = NULL
+	};
+	if(pwd == NULL) {
+		pwd = getenv("PWD"); // default spp pwd is the program pwd
+		// if for some reason PWD doesn't exist, set spp pwd to root
+		if(pwd == NULL) pwd = "/";
+	}
+	errno = 0;
+	stat.pwd = malloc(CHAR_SIZE * (strlen(pwd) + 1));
+	if(stat.pwd == NULL || errno == ENOMEM) {
 		free(line);
 		return SPP_PROCESS_ERR_NO_MEM;
 	}
 
-	if(pwd != NULL) spp_stat_set_pwd(&stat, pwd);
-
+	// read stream
 	bool read = true;
 	for(int ch = fgetc(in);
 	        read; ch = fgetc(in)) {
@@ -350,6 +322,7 @@ int process(FILE* in, FILE* out, cstr pwd) {
 				cstr tmp = realloc(line, CHAR_SIZE * (size *= LINE_BUF_GROW));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
+					free(stat.pwd);
 					return SPP_PROCESS_ERR_NO_MEM;
 				}
 				line = tmp;
@@ -367,6 +340,7 @@ int process(FILE* in, FILE* out, cstr pwd) {
 				cstr tmp = realloc(line, CHAR_SIZE * (size = len + CHAR_SIZE));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
+					free(stat.pwd);
 					return SPP_PROCESS_ERR_NO_MEM;
 				}
 				line = tmp;
@@ -378,21 +352,25 @@ int process(FILE* in, FILE* out, cstr pwd) {
 			switch(processln(line, out, &stat)) {
 			case SPP_PROCESSLN_ERR_NO_MEM: {
 				free(line);
+				free(stat.pwd);
 				return SPP_PROCESS_ERR_NO_MEM;
 			}
 			case SPP_PROCESSLN_ERR_STAT: {
 				int tmp = errno;
 				free(line);
+				free(stat.pwd);
 				errno = tmp;
 				return SPP_PROCESS_ERR_STAT;
 			}
 			case SPP_PROCESSLN_ERR_FPUTS: {
 				free(line);
+				free(stat.pwd);
 				return SPP_PROCESS_ERR_FPUTS;
 			}
 			case SPP_PROCESSLN_ERR_FOPEN: {
 				int tmp = errno;
 				free(line);
+				free(stat.pwd);
 				errno = tmp;
 				return SPP_PROCESS_ERR_FOPEN;
 			}
@@ -405,6 +383,7 @@ int process(FILE* in, FILE* out, cstr pwd) {
 				cstr tmp = realloc(line, CHAR_SIZE * (size = LINE_BUF_INIT_SIZE));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
+					free(stat.pwd);
 					return SPP_PROCESS_ERR_NO_MEM;
 				}
 				line = tmp;
@@ -414,7 +393,7 @@ int process(FILE* in, FILE* out, cstr pwd) {
 	} // end for
 
 	free(line);
-	deinit_spp_stat(&stat);
+	free(stat.pwd);
 	return SPP_PROCESS_SUCCESS;
 }
 

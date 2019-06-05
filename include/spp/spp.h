@@ -20,7 +20,7 @@
  * Header file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-03
+ * LastEdit: 2019-06-05
  */
 
 #ifndef _SPP_SPP_H
@@ -34,55 +34,10 @@
  *
  * Since: v0.1.0 2019-05-26
  */
-typedef struct spp_stat spp_stat;
-
-/**
- * Initializes the spp_stat structure STAT.
- *
- * After you are done working with the struct, you need to call deinit_spp_stat()
- * on it.
- *
- * When not enough memory is available, 1 is returned and the spp_stat struct
- * STAT should not be used.
- *
- * Param spp_stat* stat:
- *     The spp_stat to initialize.
- *
- * Return: int
- *     When a memory error occurs, 1, otherwise, on success, 0.
- *
- * Since: v0.1.0 2019-05-26
- */
-int init_spp_stat(spp_stat* stat);
-
-/**
- * Changes the private working directory of the the spp_stat structure.
- *
- * When not enough memory is available, 1 is returned and the working directory
- * will not be changed.
- *
- * Param spp_stat* stat:
- *     The spp_stat to change the private working directory of.
- *
- * Param cstr pwd:
- *     The new private working directory.
- *
- * Return: int
- *     When a memory error occurs, 1, otherwise, on success, 0.
- *
- * Since: v0.1.0 2019-06-02
- */
-int spp_stat_set_pwd(spp_stat* stat, cstr pwd);
-
-/**
- * Deinitializes the spp_stat struct STAT.
- *
- * Param spp_stat* stat:
- *     The spp_stat to deinitialize.
- *
- * Since: v0.1.0 2019-05-31
- */
-void deinit_spp_stat(spp_stat* stat);
+struct spp_stat {
+	bool ignore;
+	cstr pwd;
+};
 
 #define SPP_CHECKLN_DIR    0
 #define SPP_CHECKLN_NO_DIR 1
@@ -139,7 +94,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
  * Param FILE* out:
  *     Stream to write the processed line to.
  *
- * Param spp_stat* stat:
+ * Param struct spp_stat* stat:
  *     The data of the spp session.
  *
  * Return: int
@@ -154,7 +109,7 @@ int checkln(cstr line, cstr* cmd, cstr* arg);
  *
  * Since: v0.1.0 2019-05-26
  */
-int processln(cstr line, FILE* out, spp_stat* spp_statbuf);
+int processln(cstr line, FILE* out, struct spp_stat* spp_statbuf);
 
 #define SPP_PROCESS_SUCCESS 0
 #define SPP_PROCESS_ERR_INV_ARGS 1
