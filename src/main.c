@@ -20,7 +20,7 @@
  * Main source file for spp.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-05-31
+ * LastEdit: 2019-06-03
  */
 
 #include <string.h>
@@ -30,6 +30,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <spp/spp.h>
+#include <stdlib.h>
+#include <libgen.h>
 
 #define errprintf(msg, ...) fprintf(stderr, (msg), __VA_ARGS__)
 
@@ -118,6 +120,19 @@ int main(int argc, char** argv) {
 			perror(argv[0]);
 			return 1;
 		}
+
+		errno = 0;
+		cstr path = realpath(file, NULL);
+		if(path == NULL) {
+			// TODO: realpath() error handling
+			return 1;
+		}
+
+		cstr dir = dirname(path);
+		pwd = malloc(CHAR_SIZE * (strlen(dir) + 1));
+		strcpy(pwd, dir);
+
+		free(path);
 	} else {
 		ins = stdin;
 	}
@@ -174,6 +189,8 @@ int main(int argc, char** argv) {
 		perror(argv[0]);
 		return 1;
 	}
+
+	if(pwd != NULL) free(pwd);
 
 	return 0;
 }
