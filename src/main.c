@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
 	}
 
 	FILE* ins = NULL;
+	cstr pwd = NULL;
 
 	if(file != NULL) {
 		struct stat sb;
@@ -121,7 +122,7 @@ int main(int argc, char** argv) {
 		ins = stdin;
 	}
 
-	switch(process(ins, stdout)) {
+	switch(process(ins, stdout, pwd)) {
 	case SPP_PROCESS_ERR_NO_MEM: {
 		errprintf("%s: not enough memory\n", argv[0]);
 		return 100;
