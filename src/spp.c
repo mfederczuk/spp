@@ -309,6 +309,7 @@ int process(FILE* in, FILE* out, cstr_t pwd) {
 		free(line);
 		return SPP_PROCESS_ERR_NO_MEM;
 	}
+	strcpy(stat.pwd, pwd);
 
 	// read stream
 	bool read = true;
