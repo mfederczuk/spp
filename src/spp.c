@@ -80,7 +80,7 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 				if(lcmd_len + (CHAR_SIZE * 2) > lcmd_size) { // grow buffer
 					errno = 0;
 					cstr_t tmp = realloc(lcmd,
-					                   CHAR_SIZE * (lcmd_size *= CMD_BUF_GROW));
+					                     CHAR_SIZE * (lcmd_size *= CMD_BUF_GROW));
 					if(tmp == NULL || errno == ENOMEM) {
 						free(lcmd);
 						free(larg);
@@ -112,7 +112,7 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 				if(larg_len + (CHAR_SIZE * 2) > larg_size) { // grow buffer
 					errno = 0;
 					cstr_t tmp = realloc(larg,
-					                   CHAR_SIZE * (larg_size *= ARG_BUF_GROW));
+					                     CHAR_SIZE * (larg_size *= ARG_BUF_GROW));
 					if(tmp == NULL || errno == ENOMEM) {
 						free(lcmd);
 						free(larg);
