@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added ###
 
-* General program
+* `insert` directive
+* `include` directive
+* `ignore` directive
+* `end-ignore` directive
 
 [Unreleased]: https://github.com/SpEZiiL/spp/tree/develop

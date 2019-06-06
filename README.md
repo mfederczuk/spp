@@ -23,11 +23,10 @@ to the argument.
 
 The following commands are defined:
 
-* `include` `<file>`  
-  Copies _FILE_ into this position of the output.
-* `import` `<file>`  
-  Copies _FILE_ into this position of the output after running **spp** through
-  it.
+* `insert <file>`  
+  Inserts contents of _FILE_ into this position.
+* `include <file>`  
+  Inserts contents of _FILE_ into this position after running **spp** through it.
 * `ignore` and `end-ignore`  
   Delete this and the following lines from the final output until `end-ignore`
   is seen.
