@@ -39,10 +39,12 @@ struct spp_stat {
 	cstr_t pwd;
 };
 
-#define SPP_CHECKLN_DIR    0
-#define SPP_CHECKLN_NO_DIR 1
-#define SPP_CHECKLN_ERR_INV_ARGS 2
-#define SPP_CHECKLN_ERR_NO_MEM   3
+enum _spp_checkln_ret {
+	SPP_CHECKLN_DIR,
+	SPP_CHECKLN_NO_DIR,
+	SPP_CHECKLN_ERR_INV_ARGS,
+	SPP_CHECKLN_ERR_NO_MEM
+};
 
 /**
  * Checks if the entered line contains a valid spp directive and saves the
@@ -77,12 +79,14 @@ struct spp_stat {
  */
 int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg);
 
-#define SPP_PROCESSLN_SUCCESS 0
-#define SPP_PROCESSLN_ERR_INV_ARGS 1
-#define SPP_PROCESSLN_ERR_NO_MEM   2
-#define SPP_PROCESSLN_ERR_STAT     3
-#define SPP_PROCESSLN_ERR_FPUTS    4
-#define SPP_PROCESSLN_ERR_FOPEN    5
+enum _spp_processln_ret {
+	SPP_PROCESSLN_SUCCESS,
+	SPP_PROCESSLN_ERR_INV_ARGS,
+	SPP_PROCESSLN_ERR_NO_MEM,
+	SPP_PROCESSLN_ERR_STAT,
+	SPP_PROCESSLN_ERR_FPUTS,
+	SPP_PROCESSLN_ERR_FOPEN
+};
 
 /**
  * Processes a single line and writes it into the OUT stream.
@@ -111,12 +115,14 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg);
  */
 int processln(cstr_t line, FILE* out, struct spp_stat* spp_statbuf);
 
-#define SPP_PROCESS_SUCCESS 0
-#define SPP_PROCESS_ERR_INV_ARGS 1
-#define SPP_PROCESS_ERR_NO_MEM   2
-#define SPP_PROCESS_ERR_STAT     3
-#define SPP_PROCESS_ERR_FPUTS    4
-#define SPP_PROCESS_ERR_FOPEN    5
+enum _spp_process_ret {
+	SPP_PROCESS_SUCCESS,
+	SPP_PROCESS_ERR_INV_ARGS,
+	SPP_PROCESS_ERR_NO_MEM,
+	SPP_PROCESS_ERR_STAT,
+	SPP_PROCESS_ERR_FPUTS,
+	SPP_PROCESS_ERR_FOPEN
+};
 
 /**
  * Reads and processes every line from the entered IN stream and writes the
