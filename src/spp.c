@@ -25,13 +25,11 @@
  */
 
 #include <spp/spp.h>
-#include <stdlib.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <string.h>
 #include <spp/utils.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <spp/directives.h>
 
 #define STEP_PRE_DIR 0 // whitespace before directive
 #define STEP_DIR_CMD 1 // directive command
@@ -173,99 +171,36 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 #undef CMD_BUF_GROW
 #undef ARG_BUF_GROW
 
-int processln(cstr_t line, FILE* out, struct spp_stat* spp_statbuf) {
-	if(out == NULL || stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
+int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
+	if(out == NULL || spp_stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
 
 	cstr_t cmd = NULL, arg = NULL;
 	switch(checkln(line, &cmd, &arg)) {
 	case SPP_CHECKLN_DIR: {
 		bool valid_cmd = true;
 
-		if(strcmp(cmd, "include") == 0) {
-			if(strncmp(arg, "/", 1) != 0) { // if arg does not begin with /
-				size_t pwdlen = strlen(spp_statbuf->pwd),
-				       arglen = strlen(arg);
-
-				errno = 0;
-				cstr_t tmp = malloc(CHAR_SIZE * (pwdlen + 1 + arglen) + CHAR_SIZE);
-				if(tmp == NULL || errno == ENOMEM) {
-					free(cmd);
-					free(arg);
-					return SPP_PROCESSLN_ERR_NO_MEM;
-				}
-
-				size_t i = 0;
-				for(; i < pwdlen; ++i) {
-					tmp[i] = spp_statbuf->pwd[i];
-				}
-				tmp[i] = '/';
-				++i;
-				for(size_t j = 0; j < arglen; ++j, ++i) {
-					tmp[i] = arg[j];
-				}
-				tmp[i] = '\0';
-
-				free(arg);
-				arg = tmp;
+		bool dir_found = false;
+		enum spp_dir_func_ret ret;
+		for(size_t i = 0; i < SPP_DIRS_AMOUNT; ++i) {
+			if(strcmp(cmd, spp_dirs_names[i]) == 0) {
+				ret = spp_dirs_funcs[i](spp_stat, out, arg);
+				dir_found = true;
+				break;
 			}
-
-			struct stat statbuf;
-			errno = 0;
-			if(stat(arg, &statbuf) != 0) {
-				switch(errno) {
-				case ENAMETOOLONG:
-				case ENOENT:
-				case ENOTDIR: {
-					// when the path name is too long or the path doesn't exist
-					// we ignore the directive
-					valid_cmd = false;
-					break;
-				}
-				default: {
-					int tmp = errno;
-					free(cmd);
-					free(arg);
-					errno = tmp;
-					return SPP_PROCESSLN_ERR_STAT;
-				}
-				}
-			} else {
-				errno = 0;
-				FILE* file = fopen(arg, "r");
-				if(file == NULL) {
-					int tmp = errno;
-					free(cmd);
-					free(arg);
-					errno = tmp;
-					return SPP_PROCESSLN_ERR_FOPEN;
-				}
-
-				for(int ch = fgetc(file);
-				        ch != EOF; ch = fgetc(file)) {
-
-					fputc(ch, out);
-				}
-
-				fclose(file);
-			}
-		} else if(strcmp(cmd, "import") == 0) {
-			// TODO directive import
-		} else if(strcmp(cmd, "ignore") == 0) {
-			spp_statbuf->ignore = true;
-		} else if(strcmp(cmd, "end-ignore") == 0) {
-			spp_statbuf->ignore = false;
-		} else { // no such command; see as non-directive line
-			valid_cmd = false;
 		}
 
 		free(cmd);
 		free(arg);
 
-		// fall through if the command does not exist; output the line normally
-		if(valid_cmd) break;
+		if(dir_found && ret != SPP_DIR_FUNC_INVALID) {
+			if(ret == SPP_DIR_FUNC_ERROR) {
+				// TODO: directive error handling
+			}
+			break;
+		}
 	}
 	case SPP_CHECKLN_NO_DIR: {
-		if(!spp_statbuf->ignore) {
+		if(!spp_stat->ignore) {
 			errno = 0;
 			int exc = fputs(line, out);
 			if(exc < 0 || exc == EOF) {
