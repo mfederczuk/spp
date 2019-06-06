@@ -21,7 +21,7 @@
  * Source file for the core spp functions.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-05
+ * LastEdit: 2019-06-06
  */
 
 #include <spp/spp.h>
