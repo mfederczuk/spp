@@ -210,8 +210,9 @@ int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
 		spp_stat->ignore_next = false;
 		break;
 	}
-	case SPP_CHECKLN_ERR_NO_MEM:
+	case SPP_CHECKLN_ERR_NO_MEM: {
 		return SPP_PROCESSLN_ERR_NO_MEM;
+	}
 	}
 
 	return SPP_PROCESSLN_SUCCESS;

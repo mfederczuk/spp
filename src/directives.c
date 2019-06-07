@@ -94,7 +94,9 @@ enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
 			return SPP_DIR_FUNC_INVALID;
 		}
 		default: {
+			int tmp = errno;
 			free(filep);
+			errno = tmp;
 			return SPP_DIR_FUNC_ERROR;
 		}
 		}
@@ -102,7 +104,9 @@ enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
 		errno = 0;
 		FILE* file = fopen(filep, "r");
 		if(file == NULL) {
+			int tmp = errno;
 			free(filep);
+			errno = tmp;
 			return SPP_DIR_FUNC_ERROR;
 		}
 
@@ -171,7 +175,9 @@ enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
 			return SPP_DIR_FUNC_INVALID;
 		}
 		default: {
+			int tmp = errno;
 			free(filep);
+			errno = tmp;
 			return SPP_DIR_FUNC_ERROR;
 		}
 		}
@@ -179,7 +185,9 @@ enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
 		errno = 0;
 		FILE* file = fopen(filep, "r");
 		if(file == NULL) {
+			int tmp = errno;
 			free(filep);
+			errno = tmp;
 			return SPP_DIR_FUNC_ERROR;
 		}
 
