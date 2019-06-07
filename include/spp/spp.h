@@ -62,8 +62,8 @@ struct spp_stat {
  *     *arg needs to be NULL.
  *
  * Return: int
- *     On success, zero is returned. On error, a non-zero value is returned and
- *     errno is set appropriately.
+ *     On success, zero is returned. On failure, a non-zero value is returned
+ *     and errno is set appropriately.
  *
  * Errors:
  *     EINVAL  Arguments are invalid.
@@ -72,15 +72,6 @@ struct spp_stat {
  * Since: v0.1.0 2019-05-25
  */
 int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg);
-
-enum _spp_processln_ret {
-	SPP_PROCESSLN_SUCCESS,
-	SPP_PROCESSLN_ERR_INV_ARGS,
-	SPP_PROCESSLN_ERR_NO_MEM,
-	SPP_PROCESSLN_ERR_STAT,
-	SPP_PROCESSLN_ERR_FPUTS,
-	SPP_PROCESSLN_ERR_FOPEN
-};
 
 /**
  * Processes a single line and writes it into the OUT stream.
@@ -92,31 +83,21 @@ enum _spp_processln_ret {
  * Param FILE* out:
  *     Stream to write the processed line to.
  *
- * Param struct spp_stat* stat:
+ * Param struct spp_stat* spp_stat:
  *     The data of the spp session.
  *
  * Return: int
- *     SPP_PROCESSLN_SUCCESS       successfull execution
- *     SPP_PROCESSLN_ERR_INV_ARGS  error: OUT or STAT parameters are invalid
- *     SPP_PROCESSLN_ERR_NO_MEM    error: not enough memory to allocate buffer
- *     SPP_PROCESSLN_ERR_STAT      error: a call to stat() failed; errno is set
- *                                  and should be checked
- *     SPP_PROCESSLN_ERR_FPUTS     error: fputs() returned EOF
- *     SPP_PROCESSLN_ERR_FOPEN     error: a call to fopen() failed; errno is set
- *                                  and should be checked
+ *     On success, zero is returned. On failure, a non-zero value is returned
+ *     and errno is set appropriately.
+ * 
+ * Errors:
+ *     Any errors specified in stat(2), fputs(3) or fopen(3).
+ *     EINVAL  Arguments are invalid.
+ *     ENOMEM  Not enough memory.
  *
  * Since: v0.1.0 2019-05-26
  */
-int processln(cstr_t line, FILE* out, struct spp_stat* spp_statbuf);
-
-enum _spp_process_ret {
-	SPP_PROCESS_SUCCESS,
-	SPP_PROCESS_ERR_INV_ARGS,
-	SPP_PROCESS_ERR_NO_MEM,
-	SPP_PROCESS_ERR_STAT,
-	SPP_PROCESS_ERR_FPUTS,
-	SPP_PROCESS_ERR_FOPEN
-};
+int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat);
 
 /**
  * Reads and processes every line from the entered IN stream and writes the
@@ -135,14 +116,13 @@ enum _spp_process_ret {
  *     Pass NULL to not change it.
  *
  * Return: int
- *     SPP_PROCESS_SUCCESS       successfull execution
- *     SPP_PROCESS_ERR_INV_ARGS  error: IN or OUT parameters are invalid
- *     SPP_PROCESS_ERR_NO_MEM    error: not enough memory to allocate buffer
- *     SPP_PROCESS_ERR_STAT      error: a call to stat() failed; errno is set
- *                                and should be checked
- *     SPP_PROCESS_ERR_FPUTS     error: fputs() returned EOF
- *     SPP_PROCESS_ERR_FOPEN     error: a call to fopen() failed; errno is set
- *                                and should be checked
+ *     On success, zero is returned. On failure, a non-zero value is returned
+ *     and errno is set appropriately.
+ * 
+ * Errors:
+ *     Any errors specified in stat(2), fputs(3) or fopen(3).
+ *     EINVAL  Arguments are invalid.
+ *     ENOMEM  Not enough memory.
  *
  * Since: v0.1.0 2019-05-26
  */

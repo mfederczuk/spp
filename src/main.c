@@ -164,13 +164,13 @@ int main(int argc, char** argv) {
 		ins = stdin;
 	}
 
-	switch(process(ins, stdout, pwd)) {
-	case SPP_PROCESS_ERR_NO_MEM: {
-		errprintf("%s: not enough memory\n", argv[0]);
-		return 100;
-	}
-	case SPP_PROCESS_ERR_STAT: {
+	errno = 0;
+	if(process(ins, stdout, pwd) != 0) {
 		switch(errno) {
+		case ENOMEM: {
+			errprintf("%s: not enough memory\n", argv[0]);
+			return 100;
+		}
 		case EACCES: {
 			errprintf("%s: permission denied\n", argv[0]);
 			return 77;
@@ -186,29 +186,11 @@ int main(int argc, char** argv) {
 			          argv[0], file);
 			return 48;
 		}
-		case ENOMEM: {
-			errprintf("%s: not enough memory\n", argv[0]);
-			return 100;
-		}
-
 		default: {
 			errprintf("%s: unknown error\n", argv[0]);
 			return 125;
 		}
 		}
-	}
-	case SPP_PROCESS_ERR_FPUTS: {
-		errprintf("%s: input/output error", argv[0]);
-		return 74;
-	}
-	case SPP_PROCESS_ERR_FOPEN: {
-		if(errno == ENOMEM) {
-			errprintf("%s: not enough memory\n", argv[0]);
-			return 100;
-		}
-		perror(argv[0]);
-		return 1;
-	}
 	}
 
 	if(file != NULL && fclose(ins) == EOF) {

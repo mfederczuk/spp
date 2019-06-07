@@ -177,12 +177,13 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 }
 
 int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
-	if(out == NULL || spp_stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
+	if(out == NULL || spp_stat == NULL) {
+		errno = EINVAL;
+		return 1;
+	}
 
 	cstr_t cmd = NULL, arg = NULL;
-	if(checkln(line, &cmd, &arg) != 0) {
-		// TODO checkln() error handling
-	}
+	if(checkln(line, &cmd, &arg) != 0) return 1;
 
 	bool valid_dir = false;
 	if(cmd != NULL) { // line is valid directive
@@ -203,12 +204,8 @@ int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
 			free(arg);
 			errno = tmp;
 
-			if(!valid_dir && errno != 0) {
-				// function failed and error happened
-				switch(errno) {
-					// TODO directive function error handling
-				} // end switch(errno)
-			} // end if(!valid_dir && errno != 0)
+			// function failed and error happened
+			if(!valid_dir && errno != 0) return 1;
 		} // end if(dir_func != NULL)
 	} // end if(cmd != NULL)
 
@@ -216,27 +213,31 @@ int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
 		if(!spp_stat->ignore && !spp_stat->ignore_next) {
 			errno = 0;
 			int exc = fputs(line, out);
-			if(exc < 0 || exc == EOF) {
-				return SPP_PROCESSLN_ERR_FPUTS;
-			}
+			if(exc < 0 || exc == EOF) return 1;
 		}
 		spp_stat->ignore_next = false;
 	}
 
-	return SPP_PROCESSLN_SUCCESS;
+	return 0;
 }
 
 #define LINE_BUF_GROW 1.25
 #define LINE_BUF_INIT_SIZE 64
 
 int process(FILE* in, FILE* out, cstr_t pwd) {
-	if(in == NULL || out == NULL) return SPP_PROCESS_ERR_INV_ARGS;
+	if(in == NULL || out == NULL) {
+		errno = EINVAL;
+		return 1;
+	}
 
 	// initial allocation for the line buffer
 	size_t size = LINE_BUF_INIT_SIZE, len = 0;
 	errno = 0;
 	cstr_t line = malloc(CHAR_SIZE * size);
-	if(line == NULL || errno == ENOMEM) return SPP_PROCESS_ERR_NO_MEM;
+	if(line == NULL || errno == ENOMEM) {
+		errno = ENOMEM;
+		return 1;
+	}
 
 	// creating the spp_stat struct
 	struct spp_stat stat = {
@@ -253,7 +254,8 @@ int process(FILE* in, FILE* out, cstr_t pwd) {
 	stat.pwd = malloc(CHAR_SIZE * (strlen(pwd) + 1));
 	if(stat.pwd == NULL || errno == ENOMEM) {
 		free(line);
-		return SPP_PROCESS_ERR_NO_MEM;
+		errno = ENOMEM;
+		return 1;
 	}
 	strcpy(stat.pwd, pwd);
 
@@ -270,7 +272,8 @@ int process(FILE* in, FILE* out, cstr_t pwd) {
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
 					free(stat.pwd);
-					return SPP_PROCESS_ERR_NO_MEM;
+					errno = ENOMEM;
+					return 1;
 				}
 				line = tmp;
 			}
@@ -288,7 +291,8 @@ int process(FILE* in, FILE* out, cstr_t pwd) {
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
 					free(stat.pwd);
-					return SPP_PROCESS_ERR_NO_MEM;
+					errno = ENOMEM;
+					return 1;
 				}
 				line = tmp;
 			}
@@ -296,42 +300,25 @@ int process(FILE* in, FILE* out, cstr_t pwd) {
 
 			// work with line
 			errno = 0;
-			switch(processln(line, out, &stat)) {
-			case SPP_PROCESSLN_ERR_NO_MEM: {
-				free(line);
-				free(stat.pwd);
-				return SPP_PROCESS_ERR_NO_MEM;
-			}
-			case SPP_PROCESSLN_ERR_STAT: {
+			if(processln(line, out, &stat) != 0) {
 				int tmp = errno;
 				free(line);
 				free(stat.pwd);
 				errno = tmp;
-				return SPP_PROCESS_ERR_STAT;
-			}
-			case SPP_PROCESSLN_ERR_FPUTS: {
-				free(line);
-				free(stat.pwd);
-				return SPP_PROCESS_ERR_FPUTS;
-			}
-			case SPP_PROCESSLN_ERR_FOPEN: {
-				int tmp = errno;
-				free(line);
-				free(stat.pwd);
-				errno = tmp;
-				return SPP_PROCESS_ERR_FOPEN;
-			}
+				return 1;
 			}
 
 			// reset line
 			if(size != LINE_BUF_INIT_SIZE) {
 				// shrink buffer to init size if it was grown
 				errno = 0;
-				cstr_t tmp = realloc(line, CHAR_SIZE * (size = LINE_BUF_INIT_SIZE));
+				cstr_t tmp = realloc(line,
+				                     CHAR_SIZE * (size = LINE_BUF_INIT_SIZE));
 				if(tmp == NULL || errno == ENOMEM) {
 					free(line);
 					free(stat.pwd);
-					return SPP_PROCESS_ERR_NO_MEM;
+					errno = ENOMEM;
+					return 1;
 				}
 				line = tmp;
 			}
@@ -341,5 +328,5 @@ int process(FILE* in, FILE* out, cstr_t pwd) {
 
 	free(line);
 	free(stat.pwd);
-	return SPP_PROCESS_SUCCESS;
+	return 0;
 }
