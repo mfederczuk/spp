@@ -27,8 +27,9 @@
 #define _SPP_USAGE_H
 
 #define USAGE \
-	"usage: %s [<file>...]\n" \
+	"usage: %s [<file>]\n" \
 	"    Script preprocessor program.\n" \
+	"    If FILE is omitted, read input from stdin.\n" \
 	"\n" \
 	"    Options:\n" \
 	"      --help     show this summary and exit\n" \
