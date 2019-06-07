@@ -20,7 +20,7 @@
  * Header file for the directive functions.
  *
  * Since: v0.1.0 2019-06-05
- * LastEdit: 2019-06-06
+ * LastEdit: 2019-06-07
  */
 
 #ifndef _SPP_DIRECTIVES_H
@@ -41,9 +41,10 @@ enum spp_dir_func_ret spp_insert(__tmp);
 enum spp_dir_func_ret spp_include(__tmp);
 enum spp_dir_func_ret spp_ignore(__tmp);
 enum spp_dir_func_ret spp_end_ignore(__tmp);
+enum spp_dir_func_ret spp_ignore_next(__tmp);
 #undef __tmp
 
-#define SPP_DIRS_AMOUNT 4
+enum { SPP_DIRS_AMOUNT = 5 };
 extern cstr_t spp_dirs_names[SPP_DIRS_AMOUNT];
 extern spp_dir_func_t spp_dirs_funcs[SPP_DIRS_AMOUNT];
 

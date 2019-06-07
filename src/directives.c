@@ -20,7 +20,7 @@
  * Source file for the directive functions.
  *
  * Since: v0.1.0 2019-06-05
- * LastEdit: 2019-06-06
+ * LastEdit: 2019-06-07
  */
 
 #include <spp/directives.h>
@@ -34,16 +34,21 @@
 
 cstr_t spp_dirs_names[SPP_DIRS_AMOUNT] = {
 	"insert", "include",
-	"ignore", "end-ignore"
+	"ignore", "end-ignore", "ignorenext"
 };
 spp_dir_func_t spp_dirs_funcs[SPP_DIRS_AMOUNT] = {
 	spp_insert, spp_include,
-	spp_ignore, spp_end_ignore
+	spp_ignore, spp_end_ignore, spp_ignore_next
 };
 
 enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
                                  FILE* out,
                                  cstr_t arg) {
+	if(spp_stat->ignore || spp_stat->ignore_next) {
+		spp_stat->ignore_next = false;
+		return SPP_DIR_FUNC_SUCCESS;
+	}
+
 	cstr_t filep = NULL;
 	// making sure the entered path is absolute and saving it into filep var
 	if(strncmp(arg, "/", 1) != 0) { // if it is relative, add pwd to it
@@ -116,6 +121,11 @@ enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
 enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
                                   FILE* out,
                                   cstr_t arg) {
+	if(spp_stat->ignore || spp_stat->ignore_next) {
+		spp_stat->ignore_next = false;
+		return SPP_DIR_FUNC_SUCCESS;
+	}
+
 	cstr_t filep = NULL;
 	// making sure the entered path is absolute and saving it into filep var
 	if(strncmp(arg, "/", 1) != 0) { // if it is relative, add pwd to it
@@ -185,12 +195,26 @@ enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
 enum spp_dir_func_ret spp_ignore(struct spp_stat* stat,
                                  FILE* out,
                                  cstr_t arg) {
-	stat->ignore = true;
+	if(!stat->ignore_next) {
+		stat->ignore = true;
+		stat->ignore_next = false;
+	}
+	return SPP_DIR_FUNC_SUCCESS;
 }
 
 enum spp_dir_func_ret spp_end_ignore(struct spp_stat* stat,
                                      FILE* out,
                                      cstr_t arg) {
-	stat->ignore = false;
+	if(!stat->ignore_next) {
+		stat->ignore = false;
+		stat->ignore_next = false;
+	}
+	return SPP_DIR_FUNC_SUCCESS;
 }
 
+enum spp_dir_func_ret spp_ignore_next(struct spp_stat* stat,
+                                      FILE* out,
+                                      cstr_t arg) {
+	if(!stat->ignore) stat->ignore_next = true;
+	return SPP_DIR_FUNC_SUCCESS;
+}

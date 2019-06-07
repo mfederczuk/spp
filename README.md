@@ -30,6 +30,8 @@ The following commands are defined:
 * `ignore` and `end-ignore`  
   Delete this and the following lines from the final output until `end-ignore`
   is seen.
+* `ignorenext`  
+  Deletes this and the following line from the final output.
 
 <!-- Shields -->
 
