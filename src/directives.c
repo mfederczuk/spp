@@ -212,9 +212,7 @@ int spp_end_ignore(struct spp_stat* stat, FILE* out, cstr_t arg) {
 	return 0;
 }
 
-int spp_ignore_next(struct spp_stat* stat,
-                                      FILE* out,
-                                      cstr_t arg) {
+int spp_ignore_next(struct spp_stat* stat, FILE* out, cstr_t arg) {
 	if(!stat->ignore) stat->ignore_next = true;
 	return 0;
 }
