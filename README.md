@@ -4,10 +4,17 @@
 ![version][version-img]
 [![lang: C][lang-c-img]][lang-c-link]
 
-A preprocessor for scripts.
+**spp** is a preprocessor for scripts.
 
 **spp** is mainly supposed to be used to build big scripts that have been split
 up into several pieces.
+
+## Usage ##
+
+The executable can be passed a single file argument.  
+The entire file is processed and the output will be written to `stdout`.
+If no argument is specified or `-` is passed down, **spp** will read `stdin`
+instead.
 
 ## Directives ##
 
