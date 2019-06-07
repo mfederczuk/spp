@@ -25,6 +25,8 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <spp/usage.h>
+#include <spp/version-info.h>
 #include <spp/utils.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -45,10 +47,10 @@ int main(int argc, char** argv) {
 
 	if(argc == 2) {
 		if(strcmp(argv[1], "--help") == 0) {
-			printf("help\n");
+			printf(USAGE, argv[0]);
 			return 0;
 		} else if(strcmp(argv[1], "--version") == 0) {
-			printf("version\n");
+			fputs(VERSION_INFO, stdout);
 			return 0;
 		} else if(strcmp(argv[1], "-") != 0) {
 			file = argv[1];
