@@ -31,10 +31,12 @@
 #include <spp/utils.h>
 #include <spp/directives.h>
 
-#define STEP_PRE_DIR 0 // whitespace before directive
-#define STEP_DIR_CMD 1 // directive command
-#define STEP_DIR_PRE_ARG 2 // whitespace before directive command argument
-#define STEP_DIR_ARG 3 // directive command argument
+enum {
+	STEP_PRE_DIR, // whitespace before directive
+	STEP_DIR_CMD, // directive command
+	STEP_DIR_PRE_ARG, // whitespace before directive command argument
+	STEP_DIR_ARG // directive command argument
+};
 
 #define CMD_BUF_GROW 1.25
 #define ARG_BUF_GROW 1.25
@@ -162,14 +164,6 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 	*arg = larg;
 	return SPP_CHECKLN_DIR;
 }
-
-#undef STEP_PRE_DIR
-#undef STEP_DIR_CMD
-#undef STEP_DIR_PRE_ARG
-#undef STEP_DIR_ARG
-
-#undef CMD_BUF_GROW
-#undef ARG_BUF_GROW
 
 int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
 	if(out == NULL || spp_stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
@@ -335,6 +329,3 @@ int process(FILE* in, FILE* out, cstr_t pwd) {
 	free(stat.pwd);
 	return SPP_PROCESS_SUCCESS;
 }
-
-#undef LINE_BUF_GROW
-#undef LINE_BUF_INIT_SIZE
