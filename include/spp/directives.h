@@ -28,20 +28,24 @@
 
 #include <spp/spp.h>
 
-enum spp_dir_func_ret {
-	SPP_DIR_FUNC_SUCCESS,
-	SPP_DIR_FUNC_INVALID,
-	SPP_DIR_FUNC_ERROR
-};
+/*
+ * These functions return zero on success and a non-zero value if they failed.
+ * If an error occurs then errno needs to be appropriately set.
+ * If no error occurred, but the directive was still invalid, errno should not
+ * be changed. It is important to set errno to 0 before calling these functions.
+ */
 
-#define __tmp struct spp_stat* stat, FILE* out, cstr_t arg
-typedef enum spp_dir_func_ret(*spp_dir_func_t)(__tmp);
+#define __tmp struct spp_stat* stat, \
+              FILE* out, \
+              cstr_t arg
 
-enum spp_dir_func_ret spp_insert(__tmp);
-enum spp_dir_func_ret spp_include(__tmp);
-enum spp_dir_func_ret spp_ignore(__tmp);
-enum spp_dir_func_ret spp_end_ignore(__tmp);
-enum spp_dir_func_ret spp_ignore_next(__tmp);
+typedef int (*spp_dir_func_t)(__tmp);
+int spp_insert(__tmp);
+int spp_include(__tmp);
+int spp_ignore(__tmp);
+int spp_end_ignore(__tmp);
+int spp_ignore_next(__tmp);
+
 #undef __tmp
 
 enum { SPP_DIRS_AMOUNT = 5 };

@@ -41,12 +41,10 @@ spp_dir_func_t spp_dirs_funcs[SPP_DIRS_AMOUNT] = {
 	spp_ignore, spp_end_ignore, spp_ignore_next
 };
 
-enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
-                                 FILE* out,
-                                 cstr_t arg) {
+int spp_insert(struct spp_stat* spp_stat, FILE* out, cstr_t arg) {
 	if(spp_stat->ignore || spp_stat->ignore_next) {
 		spp_stat->ignore_next = false;
-		return SPP_DIR_FUNC_SUCCESS;
+		return 0;
 	}
 
 	cstr_t filep = NULL;
@@ -59,7 +57,7 @@ enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
 		filep = malloc(CHAR_SIZE * (pwdlen + 1 + arglen + 1));
 		if(filep == NULL || errno == ENOMEM) {
 			errno = ENOMEM;
-			return SPP_DIR_FUNC_ERROR;
+			return 1;
 		}
 
 		size_t i = 0;
@@ -76,7 +74,7 @@ enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
 		filep = malloc(CHAR_SIZE * (strlen(arg) + 1));
 		if(filep == NULL || errno == ENOMEM) {
 			errno = ENOMEM;
-			return SPP_DIR_FUNC_ERROR;
+			return 1;
 		}
 		strcpy(filep, arg);
 	}
@@ -91,13 +89,13 @@ enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
 			// when the path name is too long or the path doesn't exist
 			// we ignore the directive
 			free(filep);
-			return SPP_DIR_FUNC_INVALID;
+			return 1;
 		}
 		default: {
 			int tmp = errno;
 			free(filep);
 			errno = tmp;
-			return SPP_DIR_FUNC_ERROR;
+			return 1;
 		}
 		}
 	} else { // file exists; we can work with it
@@ -107,7 +105,7 @@ enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
 			int tmp = errno;
 			free(filep);
 			errno = tmp;
-			return SPP_DIR_FUNC_ERROR;
+			return 1;
 		}
 
 		for(int ch = fgetc(file);
@@ -118,16 +116,14 @@ enum spp_dir_func_ret spp_insert(struct spp_stat* spp_stat,
 
 		fclose(file);
 		free(filep);
-		return SPP_DIR_FUNC_SUCCESS;
+		return 0;
 	}
 }
 
-enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
-                                  FILE* out,
-                                  cstr_t arg) {
+int spp_include(struct spp_stat* spp_stat, FILE* out, cstr_t arg) {
 	if(spp_stat->ignore || spp_stat->ignore_next) {
 		spp_stat->ignore_next = false;
-		return SPP_DIR_FUNC_SUCCESS;
+		return 0;
 	}
 
 	cstr_t filep = NULL;
@@ -140,7 +136,7 @@ enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
 		filep = malloc(CHAR_SIZE * (pwdlen + 1 + arglen + 1));
 		if(filep == NULL || errno == ENOMEM) {
 			errno = ENOMEM;
-			return SPP_DIR_FUNC_ERROR;
+			return 1;
 		}
 
 		size_t i = 0;
@@ -157,7 +153,7 @@ enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
 		filep = malloc(CHAR_SIZE * (strlen(arg) + 1));
 		if(filep == NULL || errno == ENOMEM) {
 			errno = ENOMEM;
-			return SPP_DIR_FUNC_ERROR;
+			return 1;
 		}
 		strcpy(filep, arg);
 	}
@@ -172,13 +168,13 @@ enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
 			// when the path name is too long or the path doesn't exist
 			// we ignore the directive
 			free(filep);
-			return SPP_DIR_FUNC_INVALID;
+			return 1;
 		}
 		default: {
 			int tmp = errno;
 			free(filep);
 			errno = tmp;
-			return SPP_DIR_FUNC_ERROR;
+			return 1;
 		}
 		}
 	} else { // file exists; we can work with it
@@ -188,7 +184,7 @@ enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
 			int tmp = errno;
 			free(filep);
 			errno = tmp;
-			return SPP_DIR_FUNC_ERROR;
+			return 1;
 		}
 
 		process(file, out, dirname(filep));
@@ -196,33 +192,29 @@ enum spp_dir_func_ret spp_include(struct spp_stat* spp_stat,
 
 		fclose(file);
 		free(filep);
-		return SPP_DIR_FUNC_SUCCESS;
+		return 0;
 	}
 }
 
-enum spp_dir_func_ret spp_ignore(struct spp_stat* stat,
-                                 FILE* out,
-                                 cstr_t arg) {
+int spp_ignore(struct spp_stat* stat, FILE* out, cstr_t arg) {
 	if(!stat->ignore_next) {
 		stat->ignore = true;
 		stat->ignore_next = false;
 	}
-	return SPP_DIR_FUNC_SUCCESS;
+	return 0;
 }
 
-enum spp_dir_func_ret spp_end_ignore(struct spp_stat* stat,
-                                     FILE* out,
-                                     cstr_t arg) {
+int spp_end_ignore(struct spp_stat* stat, FILE* out, cstr_t arg) {
 	if(!stat->ignore_next) {
 		stat->ignore = false;
 		stat->ignore_next = false;
 	}
-	return SPP_DIR_FUNC_SUCCESS;
+	return 0;
 }
 
-enum spp_dir_func_ret spp_ignore_next(struct spp_stat* stat,
+int spp_ignore_next(struct spp_stat* stat,
                                       FILE* out,
                                       cstr_t arg) {
 	if(!stat->ignore) stat->ignore_next = true;
-	return SPP_DIR_FUNC_SUCCESS;
+	return 0;
 }

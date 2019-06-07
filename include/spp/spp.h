@@ -40,41 +40,34 @@ struct spp_stat {
 	cstr_t pwd;
 };
 
-enum _spp_checkln_ret {
-	SPP_CHECKLN_DIR,
-	SPP_CHECKLN_NO_DIR,
-	SPP_CHECKLN_ERR_INV_ARGS,
-	SPP_CHECKLN_ERR_NO_MEM
-};
-
 /**
  * Checks if the entered line contains a valid spp directive and saves the
- * directive command and the argument into the two parameters CMD and ARG.
- * Both CMD and ARG will need to be freed if a directive is found, regardless if
- * the directive contains an argument.
+ * directive command and the argument into the two dereferenced parameters CMD
+ * and ARG.
+ * Both dereferenced values of CMD and ARG will need to be freed if a directive
+ * is found, regardless if the directive contains an argument.
  *
- * If the line is not a valid spp directive, the two parameters will be kept
- * unchanged.
- *
- * The function will cancel before doing anything if CMD or ARG are NULL
- * pointers or if CMD or ARG are not pointing to NULL pointers.
+ * If the line is not a valid spp directive, the two dereferenced parameters
+ * will be kept unchanged.
  *
  * Param cstr_t line:
  *     The line to check for a spp directive.
  *
  * Param cstr_t* cmd:
  *     Will be replaced with the directive command name.
+ *     *cmd needs to be NULL.
  *
  * Param cstr_t* arg:
  *     Will be replaced with the directive command argument.
+ *     *arg needs to be NULL.
  *
  * Return: int
- *     SPP_CHECKLN_DIR           entered line is a spp directive, CMD and ARG
- *                                are allocated
- *     SPP_CHECKLN_NO_DIR        entered line is not a spp directive, CMD and
- *                                ARG are unchanged
- *     SPP_CHECKLN_ERR_INV_ARGS  error: CMD or ARG parameters are invalid
- *     SPP_CHECKLN_ERR_NO_MEM    error: not enough memory to allocate buffer
+ *     On success, zero is returned. On error, a non-zero value is returned and
+ *     errno is set appropriately.
+ *
+ * Errors:
+ *     EINVAL  Arguments are invalid.
+ *     ENOMEM  Not enough memory.
  *
  * Since: v0.1.0 2019-05-25
  */

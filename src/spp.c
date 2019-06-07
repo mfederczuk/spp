@@ -42,20 +42,27 @@ enum {
 #define ARG_BUF_GROW 1.25
 
 int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
-	if(cmd == NULL || arg == NULL) return SPP_CHECKLN_ERR_INV_ARGS;
-	if(*cmd != NULL || *arg != NULL) return SPP_CHECKLN_ERR_INV_ARGS;
+	if(cmd == NULL || arg == NULL
+	        || *cmd != NULL || *arg != NULL) {
+		errno = EINVAL;
+		return 1;
+	}
 
 	size_t lcmd_size = 16, lcmd_len = 0;
 	errno = 0;
 	cstr_t lcmd = malloc(CHAR_SIZE * lcmd_size);
-	if(lcmd == NULL || errno == ENOMEM) return SPP_CHECKLN_ERR_NO_MEM;
+	if(lcmd == NULL || errno == ENOMEM) {
+		errno = ENOMEM;
+		return 1;
+	}
 
 	size_t larg_size = 16, larg_len = 0;
 	errno = 0;
 	cstr_t larg = malloc(CHAR_SIZE * larg_size);
 	if(larg == NULL || errno == ENOMEM) {
 		free(lcmd);
-		return SPP_CHECKLN_ERR_NO_MEM;
+		errno = ENOMEM;
+		return 1;
 	}
 
 	unsigned char step = STEP_PRE_DIR;
@@ -69,7 +76,7 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 			} else { // line is no directive
 				free(lcmd);
 				free(larg);
-				return SPP_CHECKLN_NO_DIR;
+				return 0; // no directive
 			}
 			break;
 		}
@@ -84,7 +91,8 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 					if(tmp == NULL || errno == ENOMEM) {
 						free(lcmd);
 						free(larg);
-						return SPP_CHECKLN_ERR_NO_MEM;
+						errno = ENOMEM;
+						return 1;
 					}
 					lcmd = tmp;
 				}
@@ -116,7 +124,8 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 					if(tmp == NULL || errno == ENOMEM) {
 						free(lcmd);
 						free(larg);
-						return SPP_CHECKLN_ERR_NO_MEM;
+						errno = ENOMEM;
+						return 1;
 					}
 					larg = tmp;
 				}
@@ -131,7 +140,7 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 	if(step == STEP_PRE_DIR) {
 		free(lcmd);
 		free(larg);
-		return SPP_CHECKLN_NO_DIR;
+		return 0; // no directive
 	}
 
 	if(lcmd_len + CHAR_SIZE < lcmd_size) { // shorten buffer
@@ -140,7 +149,8 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
 			free(larg);
-			return SPP_CHECKLN_ERR_NO_MEM;
+			errno = ENOMEM;
+			return 1;
 		}
 		lcmd = tmp;
 	}
@@ -153,7 +163,8 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 		if(tmp == NULL || errno == ENOMEM) {
 			free(lcmd);
 			free(larg);
-			return SPP_CHECKLN_ERR_NO_MEM;
+			errno = ENOMEM;
+			return 1;
 		}
 		larg = tmp;
 	}
@@ -162,38 +173,46 @@ int checkln(cstr_t line, cstr_t* cmd, cstr_t* arg) {
 
 	*cmd = lcmd;
 	*arg = larg;
-	return SPP_CHECKLN_DIR;
+	return 0; // is directive
 }
 
 int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
 	if(out == NULL || spp_stat == NULL) return SPP_PROCESSLN_ERR_INV_ARGS;
 
 	cstr_t cmd = NULL, arg = NULL;
-	switch(checkln(line, &cmd, &arg)) {
-	case SPP_CHECKLN_DIR: {
-		bool valid_cmd = true;
-
-		bool dir_found = false;
-		enum spp_dir_func_ret ret;
-		for(size_t i = 0; i < SPP_DIRS_AMOUNT; ++i) {
-			if(strcmp(cmd, spp_dirs_names[i]) == 0) {
-				ret = spp_dirs_funcs[i](spp_stat, out, arg);
-				dir_found = true;
-				break;
-			}
-		}
-
-		free(cmd);
-		free(arg);
-
-		if(dir_found && ret != SPP_DIR_FUNC_INVALID) {
-			if(ret == SPP_DIR_FUNC_ERROR) {
-				// TODO: directive error handling
-			}
-			break;
-		}
+	if(checkln(line, &cmd, &arg) != 0) {
+		// TODO checkln() error handling
 	}
-	case SPP_CHECKLN_NO_DIR: {
+
+	bool valid_dir = false;
+	if(cmd != NULL) { // line is valid directive
+		// search for directive function
+		spp_dir_func_t dir_func = NULL;
+		for(size_t i = 0; i < SPP_DIRS_AMOUNT && dir_func == NULL; ++i) {
+			if(strcmp(cmd, spp_dirs_names[i]) == 0) {
+				dir_func = spp_dirs_funcs[i];
+			}
+		}
+
+		// if a function was found; call it
+		if(dir_func != NULL) {
+			errno = 0;
+			valid_dir = (dir_func(spp_stat, out, arg) == 0);
+			int tmp = errno;
+			free(cmd);
+			free(arg);
+			errno = tmp;
+
+			if(!valid_dir && errno != 0) {
+				// function failed and error happened
+				switch(errno) {
+					// TODO directive function error handling
+				} // end switch(errno)
+			} // end if(!valid_dir && errno != 0)
+		} // end if(dir_func != NULL)
+	} // end if(cmd != NULL)
+
+	if(!valid_dir) { // line is not a valid directive
 		if(!spp_stat->ignore && !spp_stat->ignore_next) {
 			errno = 0;
 			int exc = fputs(line, out);
@@ -202,11 +221,6 @@ int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
 			}
 		}
 		spp_stat->ignore_next = false;
-		break;
-	}
-	case SPP_CHECKLN_ERR_NO_MEM: {
-		return SPP_PROCESSLN_ERR_NO_MEM;
-	}
 	}
 
 	return SPP_PROCESSLN_SUCCESS;
