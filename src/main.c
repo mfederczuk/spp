@@ -20,7 +20,7 @@
  * Main source file for spp.
  *
  * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-05
+ * LastEdit: 2019-06-07
  */
 
 #include <string.h>
@@ -124,7 +124,34 @@ int main(int argc, char** argv) {
 		errno = 0;
 		cstr_t path = realpath(file, NULL);
 		if(path == NULL) {
-			// TODO: realpath() error handling
+			switch(errno) {
+			case EACCES: {
+				errprintf("%s: permission denied\n", argv[0]);
+				return 77;
+			}
+			case EIO: {
+				errprintf("%s: input/output error\n", argv[0]);
+				return 74;
+			}
+			case ELOOP: {
+				errprintf("%s: %s: too many symbolic links encountered\n",
+				          argv[0], file);
+				return 48;
+			}
+			case ENAMETOOLONG: {
+				errprintf("%s: %s: path name too long\n", argv[0], file);
+				return 49;
+			}
+			case ENOENT:
+			case ENOTDIR: {
+				errprintf("%s: %s: no such file\n", argv[0], file);
+				return 24;
+			}
+			case ENOMEM: {
+				errprintf("%s: not enough memory\n", argv[0]);
+				return 100;
+			}
+			}
 			return 1;
 		}
 
