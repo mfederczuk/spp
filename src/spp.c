@@ -198,6 +198,9 @@ int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
 
 			// function failed and error happened
 			if(!valid_dir && errno != 0) return 1;
+		} else {
+			free(cmd);
+			free(arg);
 		} // end if(dir_func != NULL)
 	} // end if(cmd != NULL)
 
