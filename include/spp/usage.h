@@ -23,8 +23,8 @@
  * LastEdit: 2021-10-16
  */
 
-#ifndef _SPP_USAGE_H
-#define _SPP_USAGE_H
+#ifndef SPP_USAGE_H
+#define SPP_USAGE_H
 
 #define USAGE \
 	"usage: %s [<file>]\n" \
@@ -44,4 +44,4 @@
 	"         or at: <https://github.com/mfederczuk/spp/issues>\n" \
 	"GitHub repository: <https://github.com/mfederczuk/spp>\n"
 
-#endif /* _SPP_USAGE_H */
+#endif /* SPP_USAGE_H */

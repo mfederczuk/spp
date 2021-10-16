@@ -1,6 +1,6 @@
 /*
  * Script Preprocessor.
- * Copyright (C) 2019 Michael Federczuk
+ * Copyright (C) 2019, 2021  Michael Federczuk
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
  * LastEdit: 2019-05-29
  */
 
-#ifndef _SPP_UTILS_H
-#define _SPP_UTILS_H
+#ifndef SPP_UTILS_H
+#define SPP_UTILS_H
 
 #include <spp/types.h>
 #include <stdio.h>
@@ -43,4 +43,4 @@
  */
 bool isws(char ch);
 
-#endif /* _SPP_UTILS_H */
+#endif /* SPP_UTILS_H */

@@ -1,6 +1,6 @@
 /*
  * Script Preprocessor.
- * Copyright (C) 2019 Michael Federczuk
+ * Copyright (C) 2019, 2021  Michael Federczuk
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +23,12 @@
  * LastEdit: 2019-06-05
  */
 
-#ifndef _SPP_TYPES_H
-#define _SPP_TYPES_H
+#ifndef SPP_TYPES_H
+#define SPP_TYPES_H
 
 #define CHAR_SIZE sizeof(char)
 typedef char* cstr_t;
 
 #include <stdbool.h>
 
-#endif /* _SPP_TYPES_H */
+#endif /* SPP_TYPES_H */
