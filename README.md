@@ -1,8 +1,8 @@
 # spp #
 
-[version_shield]: https://img.shields.io/badge/version-v0.1.0-informational.svg
-[release_page]: https://github.com/mfederczuk/spp/releases/tag/v0.1.0 "Release v0.1.0"
-[![version: v0.1.0][version_shield]][release_page]
+[version_shield]: https://img.shields.io/badge/version-v0.1.1-informational.svg
+[release_page]: https://github.com/mfederczuk/spp/releases/tag/v0.1.1 "Release v0.1.1"
+[![version: v0.1.1][version_shield]][release_page]
 [![Changelog](https://img.shields.io/badge/-Changelog-informational.svg)](CHANGELOG.md "Changelog")
 
 ## About ##

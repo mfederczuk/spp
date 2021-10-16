@@ -20,7 +20,7 @@
 #define SPP_VERSION_INFO_H
 
 #define VERSION_INFO \
-	"spp v0.1.0\n" \
+	"spp v0.1.1\n" \
 	"Copyright (C) 2021 Michael Federczuk\n" \
 	"License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>\n" \
 	"This is free software: you are free to change and redistribute it.\n" \
