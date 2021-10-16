@@ -1,0 +1,132 @@
+[
+	{
+		"name": "Good First Issue",
+		"description": "Good for newcomers",
+		"color": "5319e7"
+	},
+	{
+		"name": "Help Wanted",
+		"description": "Extra attention is needed",
+		"color": "006b75"
+	},
+	{
+		"name": "Scope: Behavior / Code",
+		"description": null,
+		"color": "0e8a16"
+	},
+	{
+		"name": "Scope: Documentation",
+		"description": null,
+		"color": "0e8a16"
+	},
+	{
+		"name": "Scope: N/A",
+		"description": null,
+		"color": "0e8a16"
+	},
+	{
+		"name": "Type: Enhancement",
+		"description": "New feature/addition request (Issue) or implementation (PR)",
+		"color": "0052cc"
+	},
+	{
+		"name": "Type: Change",
+		"description": "New adjustment/revision/improvement request (Issue) or implementation (PR)",
+		"color": "0052cc"
+	},
+	{
+		"name": "Type: Bug Report/Fix",
+		"description": "Bug/Error report (Issue) or fix (PR)",
+		"color": "0052cc"
+	},
+	{
+		"name": "Type: Internal Refactor or Cleanup",
+		"description": "Refactors or formatting fixes (PR only) (don't use this for typos or grammar mistakes)",
+		"color": "0052cc"
+	},
+	{
+		"name": "Type: Dependencies",
+		"description": "Updates to dependencies (PR only)",
+		"color": "0052cc"
+	},
+	{
+		"name": "Type: Question",
+		"description": "Further information is requested (Issue only)",
+		"color": "0052cc"
+	},
+	{
+		"name": "Type: Other",
+		"description": null,
+		"color": "0052cc"
+	},
+	{
+		"name": "Priority #1: Low",
+		"description": null,
+		"color": "b60205"
+	},
+	{
+		"name": "Priority #2: Medium",
+		"description": null,
+		"color": "b60205"
+	},
+	{
+		"name": "Priority #3: High",
+		"description": null,
+		"color": "b60205"
+	},
+	{
+		"name": "Priority #4: Critical",
+		"description": null,
+		"color": "b60205"
+	},
+	{
+		"name": "Priority #4: Critical (Blocker)",
+		"description": "This issue or pull request needs to be finished before more work can be done",
+		"color": "b60205"
+	},
+	{
+		"name": "Status #1: Requested",
+		"description": "This issue or pull request needs to be reviewed and approved or rejected by a collaborator",
+		"color": "fbca04"
+	},
+	{
+		"name": "Status #2: In Review",
+		"description": "This issue or pull request is currently being reviewed by a collaborator",
+		"color": "fbca04"
+	},
+	{
+		"name": "Status #2: In Review (Needs more info)",
+		"description": "More info by the issue or pull request creator is needed",
+		"color": "fbca04"
+	},
+	{
+		"name": "Status #3: ToDo",
+		"description": "This issue or pull request was approved and needs to be worked on",
+		"color": "fbca04"
+	},
+	{
+		"name": "Status #4: In Progress",
+		"description": "This issue or pull request is currently being worked on",
+		"color": "fbca04"
+	},
+	{
+		"name": "Status #5: Resolved - Done",
+		"description": "This issue or pull request is finished",
+		"color": "fef2c0"
+	},
+	{
+		"name": "Status #5: Resolved - Won't Do",
+		"description": "This issue or pull request will not be worked on",
+		"color": "fef2c0"
+	},
+	{
+		"name": "Status #5: Resolved - Won't Do (Cannot Reproduce)",
+		"description": "This issue cannot be reproduced",
+		"color": "fef2c0"
+	},
+	{
+		"name": "Status #5: Resolved - Won't Do (Duplicate)",
+		"description": "This issue or pull request already exists",
+		"color": "fef2c0"
+	}
+]
