@@ -1,6 +1,6 @@
 /*
  * Script Preprocessor.
- * Copyright (C) 2019 Michael Federczuk
+ * Copyright (C) 2019, 2021  Michael Federczuk
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// include/spp/spp_directives.h
-/*
- * Header file for the directive functions.
- *
- * Since: v0.1.0 2019-06-05
- * LastEdit: 2019-06-07
- */
 
-#ifndef _SPP_DIRECTIVES_H
-#define _SPP_DIRECTIVES_H
+#ifndef SPP_DIRECTIVES_H
+#define SPP_DIRECTIVES_H
 
 #include <spp/spp.h>
 
@@ -52,4 +45,4 @@ enum { SPP_DIRS_AMOUNT = 5 };
 extern cstr_t spp_dirs_names[SPP_DIRS_AMOUNT];
 extern spp_dir_func_t spp_dirs_funcs[SPP_DIRS_AMOUNT];
 
-#endif /* _SPP_DIRECTIVES_H */
+#endif /* SPP_DIRECTIVES_H */

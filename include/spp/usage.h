@@ -15,16 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// include/spp/usage.h
-/*
- * Macro definition for the --help usage summary.
- *
- * Since: v0.1.0 2019-06-07
- * LastEdit: 2021-10-16
- */
 
-#ifndef _SPP_USAGE_H
-#define _SPP_USAGE_H
+#ifndef SPP_USAGE_H
+#define SPP_USAGE_H
 
 #define USAGE \
 	"usage: %s [<file>]\n" \
@@ -44,4 +37,4 @@
 	"         or at: <https://github.com/mfederczuk/spp/issues>\n" \
 	"GitHub repository: <https://github.com/mfederczuk/spp>\n"
 
-#endif /* _SPP_USAGE_H */
+#endif /* SPP_USAGE_H */

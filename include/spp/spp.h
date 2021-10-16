@@ -1,6 +1,6 @@
 /*
  * Script Preprocessor.
- * Copyright (C) 2019 Michael Federczuk
+ * Copyright (C) 2019, 2021  Michael Federczuk
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// include/spp/spp.h
-/*
- * Header file for the core spp functions.
- *
- * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-07
- */
 
-#ifndef _SPP_SPP_H
-#define _SPP_SPP_H
+#ifndef SPP_SPP_H
+#define SPP_SPP_H
 
 #include <spp/types.h>
 #include <stdio.h>
@@ -128,4 +121,4 @@ int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat);
  */
 int process(FILE* in, FILE* out, cstr_t pwd);
 
-#endif /* _SPP_SPP_H */
+#endif /* SPP_SPP_H */

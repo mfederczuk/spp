@@ -1,6 +1,6 @@
 /*
  * Script Preprocessor.
- * Copyright (C) 2019 Michael Federczuk
+ * Copyright (C) 2019, 2021  Michael Federczuk
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,14 +14,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-// src/spp.c
-/*
- * spp.h implementation.
- * Source file for the core spp functions.
- *
- * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-07
  */
 
 #include <spp/spp.h>
@@ -206,6 +198,9 @@ int processln(cstr_t line, FILE* out, struct spp_stat* spp_stat) {
 
 			// function failed and error happened
 			if(!valid_dir && errno != 0) return 1;
+		} else {
+			free(cmd);
+			free(arg);
 		} // end if(dir_func != NULL)
 	} // end if(cmd != NULL)
 
