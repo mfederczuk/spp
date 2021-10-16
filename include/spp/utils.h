@@ -15,13 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// include/spp/util.h
-/*
- * Header file for utility functions.
- *
- * Since: v0.1.0 2019-05-24
- * LastEdit: 2019-05-29
- */
 
 #ifndef SPP_UTILS_H
 #define SPP_UTILS_H

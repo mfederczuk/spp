@@ -15,13 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// include/spp/spp.h
-/*
- * Header file for the core spp functions.
- *
- * Since: v0.1.0 2019-05-25
- * LastEdit: 2019-06-07
- */
 
 #ifndef SPP_SPP_H
 #define SPP_SPP_H

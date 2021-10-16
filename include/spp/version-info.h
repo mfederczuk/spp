@@ -15,13 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// include/spp/version-info.h
-/*
- * Macro definition for the --version version and legal information.
- *
- * Since: v0.1.0 2019-06-07
- * LastEdit: 2021-10-16
- */
 
 #ifndef SPP_VERSION_INFO_H
 #define SPP_VERSION_INFO_H

@@ -15,13 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// include/spp/types.h
-/*
- * Header file for typedefs and commonly used types.
- *
- * Since: v0.1.0 2019-05-24
- * LastEdit: 2019-06-05
- */
 
 #ifndef SPP_TYPES_H
 #define SPP_TYPES_H
