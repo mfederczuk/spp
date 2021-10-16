@@ -1,6 +1,6 @@
 /*
  * Script Preprocessor.
- * Copyright (C) 2019 Michael Federczuk
+ * Copyright (C) 2019, 2021  Michael Federczuk
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  * Macro definition for the --version version and legal information.
  *
  * Since: v0.1.0 2019-06-07
- * LastEdit: 2019-06-07
+ * LastEdit: 2021-10-16
  */
 
 #ifndef _SPP_VERSION_INFO_H
@@ -28,7 +28,7 @@
 
 #define VERSION_INFO \
 	"spp v0.1.0\n" \
-	"Copyright (c) 2019 Michael Federczuk\n" \
+	"Copyright (C) 2021 Michael Federczuk\n" \
 	"License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>\n" \
 	"This is free software: you are free to change and redistribute it.\n" \
 	"There is NO WARRANTY, to the extent permitted by law.\n" \
