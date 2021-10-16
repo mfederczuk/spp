@@ -1,32 +1,33 @@
-# Script Preprocessor #
+# spp #
 
-![status][status-img]
-![version][version-img]
-[![lang: C][lang-c-img]][lang-c-link]
+[version_shield]: https://img.shields.io/badge/version-v0.1.0-informational.svg
+[release_page]: https://github.com/mfederczuk/spp/releases/tag/v0.1.0 "Release v0.1.0"
+[![version: v0.1.0][version_shield]][release_page]
+[![Changelog](https://img.shields.io/badge/-Changelog-informational.svg)](CHANGELOG.md "Changelog")
 
-**spp** is a preprocessor for scripts.
+## About ##
 
-**spp** is mainly supposed to be used to build big scripts that have been split
-up into several pieces.
+> Script Preprocessor
+
+**spp** is a preprocessor program for script files.
+
+**spp** is mainly intended to be used to build big scripts that have been split up into several pieces.
 
 ## Usage ##
 
 The executable can be passed a single file argument.  
 The entire file is processed and the output will be written to `stdout`.
-If no argument is specified or `-` is passed down, **spp** will read `stdin`
-instead.
+If no argument is specified or `-` is passed down, **spp** will read `stdin` instead.
 
-## Directives ##
+### Directives ###
 
-The preprocessor directives of **spp** look similiar to the directives of the
-**C** and **C++** preprocessor.
+The preprocessor directives of **spp** look similar to the directives of the **C** and **C++** preprocessor.
 
 **Synopsis:** `[whitespace]#<command>[<whitespace><argument>]`
 
 _WHITESPACE_ may be either spaces or tabs.  
 _COMMAND_ may be any characters BUT spaces and tabs.  
-_ARGUMENT_ may be ANY character. Note that trailing whitespace will also count
-to the argument.
+_ARGUMENT_ may be ANY character. Note that trailing whitespace will also count to the argument.
 
 The following commands are defined:
 
@@ -35,16 +36,24 @@ The following commands are defined:
 * `include <file>`  
   Inserts contents of _FILE_ into this position after running **spp** through it.
 * `ignore` and `end-ignore`  
-  Delete this and the following lines from the final output until `end-ignore`
-  is seen.
+  Delete this and the following lines from the final output until `end-ignore` is seen.
 * `ignorenext`  
   Deletes this and the following line from the final output.
 
-<!-- Shields -->
+## Installation ##
 
-[status-img]: https://img.shields.io/badge/dynamic/json.svg?label=status&url=http%3A%2F%2Fspeziil.ddns.net%2Frepos%2Fspp.json&query=%24.status&colorB=brightgreen
-[version-img]: https://img.shields.io/badge/dynamic/json.svg?label=version&url=http%3A%2F%2Fspeziil.ddns.net%2Frepos%2Fspp.json&query=%24.version&colorB=blue
-[lang-c-img]: http://speziil.ddns.net/shields/lang/c/c11.svg
+```sh
+git clone https://github.com/mfederczuk/spp.git &&
+	cd spp &&
+	make &&
+	sudo make install
+```
 
-[version-link]: https://github.com/SpEZiiL/spp/releases/latest
-[lang-c-link]: http://speziil.ddns.net/shields/lang/c/c11.html
+## Contributing ##
+
+Read through the [Contribution Guidelines](CONTRIBUTING.md) if you want to contribute to this project.
+
+## License ##
+
+**spp** is licensed under [**GNU GPL v3.0**](licenses/GNU-GPL-v3.0.txt) or later.  
+For more information about copying and licensing, see the [COPYING.txt](COPYING.txt) file.
