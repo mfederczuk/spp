@@ -10,6 +10,7 @@ and this project adheres to [**Semantic Versioning v2.0.0**](https://semver.org/
 
 ### Added ###
 
+* Proper **POSIX**-style & **GNU**-style option parsing system
 * New Options:
   * `--output` - redirect output to another file
   * `--truncate` - truncate output file
