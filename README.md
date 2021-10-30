@@ -7,11 +7,12 @@
 
 ## About ##
 
-> Script Preprocessor
+> Script Preprocessor - a general-purpose preprocessor program.
 
-**spp** is a preprocessor program for script files.
+**spp** was originally created to combine big shellscripts, that have been split into several files, into a single file
+for easier distribution, though **spp** may, of course, be used for any other purpose.
 
-**spp** is mainly intended to be used to build big scripts that have been split up into several pieces.
+**spp**'s design and functionality was greatly based off of and inspired by **C** & **C++**'s preprocessor.
 
 ## Usage ##
 
