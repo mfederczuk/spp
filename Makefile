@@ -22,9 +22,18 @@ TARGET = spp
 PACKAGE = $(TARGET)
 
 SRC = src
-BIN = bin
+BIN := bin
 
-CCFLAGS  = -Iinclude -std=c11 -Wall -Wextra
+CCFLAGS  = -Iinclude -std=c11 \
+           -Wall -Wextra -pedantic -Wpedantic -pedantic-errors -Werror=pedantic
+
+-include debug_build.mk
+ifneq "$(DEBUG_BUILD)" "1"
+ BIN := $(BIN)/release
+ CCFLAGS += -DNDEBUG -O3
+else
+ BIN := $(BIN)/debug
+endif
 
 # === colors ================================================================= #
 
