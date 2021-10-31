@@ -33,6 +33,7 @@ ifneq "$(DEBUG_BUILD)" "1"
  CCFLAGS += -DNDEBUG -O3
 else
  BIN := $(BIN)/debug
+ LINKS = memtrace3
 endif
 
 # === colors ================================================================= #

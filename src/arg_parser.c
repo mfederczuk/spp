@@ -25,6 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <spp/memtrace.h>
+
 enum {
 	SAVED_LOW_PRIO_OPTIONS_INITIAL_CAPACITY = 1,
 	SAVED_LOW_PRIO_OPTIONS_GROWTH_FACTOR = 2

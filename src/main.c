@@ -30,6 +30,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <spp/memtrace.h>
+
 
 #ifdef NDEBUG
 	#define debug_perror(s) ((void)0)

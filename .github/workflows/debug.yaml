@@ -12,11 +12,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Memtrace v3.0.0
+        uses: actions/checkout@v2
+        with:
+          repository: mfederczuk/memtrace
+          path: memtrace
+          ref: v3.0.0
+
+      - name: Build Memtrace
+        run: make
+        working-directory: memtrace
+
+      - name: Install Memtrace
+        run: sudo make install
+        working-directory: memtrace
+
       - name: Checkout spp
         uses: actions/checkout@v2
+        with:
+          path: spp
 
       - name: Build spp
         run: DEBUG_BUILD=1 make
+        working-directory: spp
 
       - name: Install spp
         run: sudo DEBUG_BUILD=1 make install
+        working-directory: spp
