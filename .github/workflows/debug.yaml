@@ -1,0 +1,22 @@
+name: Debug Build
+
+on:
+  push:
+    branches-ignore: [ 'v[0-9]+' ]
+  pull_request:
+    branches-ignore: [ 'v[0-9]+' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout spp
+        uses: actions/checkout@v2
+
+      - name: Build spp
+        run: DEBUG_BUILD=1 make
+
+      - name: Install spp
+        run: sudo DEBUG_BUILD=1 make install

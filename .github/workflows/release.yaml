@@ -1,0 +1,22 @@
+name: Release Build
+
+on:
+  push:
+    branches: [ 'v[0-9]+' ]
+  pull_request:
+    branches: [ 'v[0-9]+' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout spp
+        uses: actions/checkout@v2
+
+      - name: Build spp
+        run: make
+
+      - name: Install spp
+        run: sudo make install
