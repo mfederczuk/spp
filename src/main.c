@@ -1,6 +1,6 @@
 /*
  * Script Preprocessor - a general-purpose preprocessor program.
- * Copyright (C) 2021  Michael Federczuk
+ * Copyright (C) 2022  Michael Federczuk
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,9 @@
 #include <libgen.h>
 #include <spp/arg_parser.h>
 #include <spp/compiler.h>
+#include <spp/spp.h>
 #include <spp/types.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -200,8 +202,156 @@ int main(const int argc, const cstr_t* const argv) {
 	}
 
 
+	// checking and opening the input files
+
+	struct spp_input_file* opened_input_files;
+
+	if(result.normal_execution.cli.input_files_size == 0) {
+		opened_input_files = NULL;
+	} else {
+		errno = 0;
+		opened_input_files = malloc(sizeof(*opened_input_files) * (result.normal_execution.cli.input_files_size + 1));
+		spp_if_unlikely(opened_input_files == NULL || errno != 0) {
+			if(output_stream != stdout) {
+				fclose(output_stream);
+			}
+			free(result.normal_execution.cli.input_files);
+
+			fprintf(stderr, "%s: not enough memory\n", argv[0]);
+
+			return 101;
+		}
+
+		struct spp_input_file* opened_input_file_it = opened_input_files;
+		bool has_stdin = false;
+		const_cstr_t input_file;
+		struct stat statbuf;
+
+		for(size_t i = 0; i < result.normal_execution.cli.input_files_size; ++i) {
+			input_file = result.normal_execution.cli.input_files[i];
+			if(strcmp(input_file, "-") == 0) {
+				if(!has_stdin) {
+					// only the first "-" argument will be used, any subsequence ones will just be ignored
+					has_stdin = true;
+					*opened_input_file_it = (struct spp_input_file){ .stream = stdin, .filename = NULL };
+					++opened_input_file_it;
+				}
+			} else {
+				errno = 0;
+				if(stat(input_file, &statbuf) != 0 || errno != 0) {
+					--opened_input_file_it;
+					for(; opened_input_file_it >= opened_input_files; --opened_input_file_it) {
+						if(opened_input_file_it->stream != stdin) {
+							fclose(opened_input_file_it->stream);
+						}
+					}
+					free(opened_input_files);
+
+					if(output_stream != stdout) {
+						fclose(output_stream);
+					}
+
+					const int exc = print_stat_error_message(argv[0], input_file);
+
+					free(result.normal_execution.cli.input_files);
+
+					return exc;
+				}
+
+				if(S_ISDIR(statbuf.st_mode)) {
+					--opened_input_file_it;
+					for(; opened_input_file_it >= opened_input_files; --opened_input_file_it) {
+						if(opened_input_file_it->stream != stdin) {
+							fclose(opened_input_file_it->stream);
+						}
+					}
+					free(opened_input_files);
+
+					if(output_stream != stdout) {
+						fclose(output_stream);
+					}
+
+					fprintf(stderr, "%s: %s: not a file\n", argv[0], input_file);
+
+					free(result.normal_execution.cli.input_files);
+
+					return 26;
+				}
+
+
+				errno = 0;
+				if(access(input_file, R_OK) != 0 || errno != 0) {
+					--opened_input_file_it;
+					for(; opened_input_file_it >= opened_input_files; --opened_input_file_it) {
+						if(opened_input_file_it->stream != stdin) {
+							fclose(opened_input_file_it->stream);
+						}
+					}
+					free(opened_input_files);
+
+					if(output_stream != stdout) {
+						fclose(output_stream);
+					}
+
+					const int exc = print_access_error_message(
+						argv[0],
+						input_file,
+						"read permission missing"
+					);
+
+					free(result.normal_execution.cli.input_files);
+
+					return exc;
+				}
+
+
+				errno = 0;
+				*opened_input_file_it = (struct spp_input_file){
+					.stream = fopen(input_file, "r"),
+					.filename = input_file
+				};
+
+				if(opened_input_file_it->stream == NULL || errno != 0) {
+					--opened_input_file_it;
+					for(; opened_input_file_it >= opened_input_files; --opened_input_file_it) {
+						if(opened_input_file_it->stream != stdin) {
+							fclose(opened_input_file_it->stream);
+						}
+					}
+					free(opened_input_files);
+
+					if(output_stream != stdout) {
+						fclose(output_stream);
+					}
+
+					// once again; fuck const-safety
+					const int exc = print_fopen_error_message(argv[0], (cstr_t)input_file);
+
+					free(result.normal_execution.cli.input_files);
+
+					return exc;
+				}
+
+				++opened_input_file_it;
+			}
+		}
+
+		*opened_input_file_it = (struct spp_input_file){ .stream = NULL };
+	}
+
+
 	// TODO
 
+
+	if(result.normal_execution.cli.input_files_size > 0) {
+		for(struct spp_input_file* opened_input_file_it = opened_input_files; opened_input_file_it->stream != NULL; ++opened_input_file_it) {
+			if(opened_input_file_it->stream != stdin) {
+				fclose(opened_input_file_it->stream);
+			}
+		}
+
+		free(opened_input_files);
+	}
 
 	if(output_stream != stdout) {
 		fclose(output_stream);

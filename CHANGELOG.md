@@ -10,6 +10,7 @@ and this project adheres to [**Semantic Versioning v2.0.0**](https://semver.org/
 
 ### Added ###
 
+* Multiple files can now be processed at the same time, instead of just one
 * Proper **POSIX**-style & **GNU**-style option parsing system
 * New Options:
   * `--output` - redirect output to another file
