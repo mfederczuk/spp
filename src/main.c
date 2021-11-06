@@ -22,6 +22,7 @@
 #include <libgen.h>
 #include <spp/arg_parser.h>
 #include <spp/compiler.h>
+#include <spp/debug.h>
 #include <spp/spp.h>
 #include <spp/types.h>
 #include <stdbool.h>
@@ -101,6 +102,7 @@ int main(const int argc, const cstr_t* const argv) {
 	// checking and opening the output file
 	FILE* output_stream;
 	if(result.normal_execution.cli.options_cli.output == NULL) {
+		debug_log("no output file specified; defaulting to stdout");
 		output_stream = stdout;
 	} else {
 		struct stat statbuf;
@@ -175,6 +177,8 @@ int main(const int argc, const cstr_t* const argv) {
 
 				return exc;
 			}
+
+			debug_log("output file does not exist; will be created");
 		} else {
 			free(result.normal_execution.cli.input_files);
 			return print_stat_error_message(argv[0], result.normal_execution.cli.options_cli.output);
@@ -184,10 +188,12 @@ int main(const int argc, const cstr_t* const argv) {
 		errno = 0;
 		switch(result.normal_execution.cli.options_cli.output_mode) {
 			case(SPP_OPTIONS_CLI_OUTPUT_MODE_TRUNCATE): {
+				debug_log("truncating output file");
 				output_stream = fopen(result.normal_execution.cli.options_cli.output, "w");
 				break;
 			}
 			case(SPP_OPTIONS_CLI_OUTPUT_MODE_APPEND): {
+				debug_log("appending to output file");
 				output_stream = fopen(result.normal_execution.cli.options_cli.output, "a");
 				break;
 			}
@@ -207,6 +213,7 @@ int main(const int argc, const cstr_t* const argv) {
 	struct spp_input_file* opened_input_files;
 
 	if(result.normal_execution.cli.input_files_size == 0) {
+		debug_log("no input files specified; defaulting to stdin");
 		opened_input_files = NULL;
 	} else {
 		errno = 0;
@@ -231,11 +238,17 @@ int main(const int argc, const cstr_t* const argv) {
 			input_file = result.normal_execution.cli.input_files[i];
 			if(strcmp(input_file, "-") == 0) {
 				if(!has_stdin) {
+					debug_log("first '-' argument encountered; adding stdin as input file");
 					// only the first "-" argument will be used, any subsequence ones will just be ignored
 					has_stdin = true;
 					*opened_input_file_it = (struct spp_input_file){ .stream = stdin, .filename = NULL };
 					++opened_input_file_it;
 				}
+				#ifndef NDEBUG
+				  else {
+					debug_log("subsequent '-' argument ignored");
+				}
+				#endif
 			} else {
 				errno = 0;
 				if(stat(input_file, &statbuf) != 0 || errno != 0) {
@@ -337,6 +350,19 @@ int main(const int argc, const cstr_t* const argv) {
 		}
 
 		*opened_input_file_it = (struct spp_input_file){ .stream = NULL };
+
+		#ifndef NDEBUG
+		const size_t opened_input_files_size = (opened_input_file_it - opened_input_files);
+		if(result.normal_execution.cli.input_files_size == opened_input_files_size) {
+			debug_logf("%zu input file(s) opened", opened_input_files_size);
+		} else {
+			debug_logf(
+				"%zu given input file(s);  %zu actually opened",
+				result.normal_execution.cli.input_files_size,
+				opened_input_files_size
+			);
+		}
+		#endif
 	}
 
 
