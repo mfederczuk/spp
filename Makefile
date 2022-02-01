@@ -1,5 +1,5 @@
 # C/C++ Makefile Template for applications and libraries.
-# Copyright (C) 2020 Michael Federczuk
+# Copyright (C) 2020, 2022  Michael Federczuk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -434,11 +434,36 @@ else
  endif
 endif
 
+# ============================================================================ #
+
+$(SRC_MAIN)/options/help_string.h: help_string.in.txt
+	@{ \
+		echo '/*'; \
+		echo " * Generated on $$(date)"; \
+		echo ' * DO NOT EDIT!'; \
+		echo ' */'; \
+		echo; \
+		\
+		echo '#ifndef SPP_HELP_STRING_H'; \
+		echo '#define SPP_HELP_STRING_H'; \
+		echo; \
+		\
+		echo '#define SPP_HELP_STRING \'; \
+		egrep -v '^[[:space:]]*#' $< | sed -E s/'^.*$$'/'\t"\0\\n" \\'/; \
+		\
+		echo; \
+		echo '#endif /* SPP_HELP_STRING_H */'; \
+	} > $@
+	$(info $(object_build_fx)Generating file '$@'...$(reset_fx))
+
+override spp_help_string_h_when_help_c = $(if $(call _eq,$(1),options/help.c),$(SRC_MAIN)/options/help_string.h)
+
 # === building object files ================================================== #
 
 ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  objects: $(STATIC_OBJECTS)
- $(STATIC_C_OBJECTS):   $(call _static_object,%): $(SRC_MAIN)/%
+ .SECONDEXPANSION:
+ $(STATIC_C_OBJECTS):   $(call _static_object,%): $(SRC_MAIN)/% $$(call spp_help_string_h_when_help_c,%)
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC)  $(CCFLAGS) -c '$<' -o '$@'
@@ -613,10 +638,10 @@ override CLEANING_TEST_TARGETS := $(addprefix clean/,$(TEST_TARGETS))
 
 ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  ifneq "$(SRC_TEST)" "/dev/null"
-  clean: clean/objects clean/target clean/tests
+  clean: clean/objects clean/$(SRC_MAIN)/options/help_string.h clean/target clean/tests
   .PHONY: clean
  else
-  clean: clean/objects clean/target
+  clean: clean/objects clean/$(SRC_MAIN)/options/help_string.h clean/target
   .PHONY: clean
  endif
 
@@ -627,6 +652,10 @@ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
 	@$(call _clean_empty_dir,$(BIN))
  .PHONY: clean/objects $(CLEANING_STATIC_OBJECTS)
+
+ clean/$(SRC_MAIN)/options/help_string.h:
+	 @rm -fv -- $(@:clean/%=%) | $(call _color_pipe,$(clean_fx))
+ .PHONY: clean/$(SRC_MAIN)/options/help_string.h
 
  clean/target: clean/$(EXE_TARGET)
  clean/$(EXE_TARGET):

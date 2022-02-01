@@ -1,0 +1,31 @@
+usage: %s [-o <output_file>] [<file>...]
+    Script Preprocessor - a general-purpose preprocessor program.
+
+    Process each FILE given and output them all, concatenated, to stdout.
+    If no FILEs are given, read from stdin instead.
+    The first '-' argument seen will read from stdin, any subsequent '-' arguments are ignored.
+    If an actual file named '-' needs to be read, use either an absolute path or './-'.
+
+    Errors/warnings/notes are written to stderr.
+
+    Options:
+      -o, --output=<file>  Redirect output to FILE.
+                           If it does not exist, it is created
+
+      -t, --truncate  Truncate the output file (default) (only sensible when used with --output)
+      -a, --append    Append to the output file instead of truncating (only sensible when used with --output)
+
+      -h, --help     Display this summary and exit
+      -V, --version  Display version and legal information and exit
+
+    Exit Status:
+      (using CommonCodes v2 <https://mfederczuk.github.io/commoncodes/v2.html>)
+      48  A file is too big
+      49  A file is busy
+      50  Interrupted by signal
+      51  Invalid filename
+      52  Not enough disk space available
+
+Report bugs at: <https://github.com/mfederczuk/spp/issues>
+         or to: <federczuk.michael@protonmail.com>
+GitHub repository: <https://github.com/mfederczuk/spp>
