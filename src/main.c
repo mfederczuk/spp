@@ -55,7 +55,8 @@ static inline int main_open_output_file(
 static inline int main_open_input_files(
 	const_cstr_t argv0,
 	const_cstr_t* input_file_paths,
-	size_t input_file_paths_size
+	size_t input_file_paths_size,
+	FILE* output_stream
 );
 
 
@@ -233,7 +234,8 @@ static inline int main_open_output_file(
 	const int exc = main_open_input_files(
 		argv0,
 		input_file_paths,
-		input_file_paths_size
+		input_file_paths_size,
+		output_stream
 	);
 
 
@@ -248,7 +250,8 @@ static inline int main_open_output_file(
 static inline int main_open_input_files(
 	const const_cstr_t argv0,
 	const_cstr_t* const input_file_paths,
-	const size_t input_file_paths_size
+	const size_t input_file_paths_size,
+	FILE* const output_stream
 ) {
 	struct spp_input_file* opened_input_files;
 
@@ -382,7 +385,44 @@ static inline int main_open_input_files(
 	}
 
 
-	// TODO process files
+	spp_ret_status_t process_ret_status;
+	if(input_file_paths_size > 0) {
+		process_ret_status = spp_process_files(opened_input_files, output_stream);
+	} else {
+		struct spp_input_file vector[] = {{ .stream = stdin, .filename = NULL }, { .stream = NULL }};
+		process_ret_status = spp_process_files(vector, output_stream);
+	}
+
+	if(process_ret_status != SPP_RET_STATUS_SUCCESS) {
+		if(input_file_paths_size > 0) {
+			for(struct spp_input_file* opened_input_file_it = opened_input_files; opened_input_file_it->stream != NULL; ++opened_input_file_it) {
+				if(opened_input_file_it->stream != stdin) {
+					fclose(opened_input_file_it->stream);
+				}
+			}
+
+			free(opened_input_files);
+		}
+
+		switch(errno) {
+			case(ENOMEM): {
+				fprintf(stderr, "%s: not enough memory\n", argv0);
+				return 101;
+			}
+			// TODO error handling
+			default: {
+				debug_errno_push();
+
+				fprintf(stderr, "%s: unknown error\n", argv0);
+
+				debug_errno_pop();
+
+				debug_perror("spp_process_files");
+
+				return 125;
+			}
+		}
+	}
 
 
 	if(input_file_paths_size > 0) {

@@ -7,41 +7,47 @@
 
 ## About ##
 
-> Script Preprocessor - a general-purpose preprocessor program.
+**spp** (**s**cript **p**re**p**rocessor) is a general-purpose preprocessor program, similar to [m4].
 
 **spp** was originally created to combine big shellscripts, that have been split into several files, into a single file
 for easier distribution, though **spp** may, of course, be used for any other purpose.
 
-**spp**'s design and functionality was greatly based off of and inspired by **C** & **C++**'s preprocessor.
+Its design and functionality was greatly based off of and inspired by **C** & **C++**'s preprocessor.
+
+[m4]: <https://en.wikipedia.org/wiki/M4_(computer_language)> "m4 (computer language) - Wikipedia"
 
 ## Usage ##
 
-The executable can be passed a single file argument.  
-The entire file is processed and the output will be written to `stdout`.
-If no argument is specified or `-` is passed down, **spp** will read `stdin` instead.
+**spp** will read through a file line-by-line, echoing each non-directive line to the output.
 
 ### Directives ###
 
-The preprocessor directives of **spp** look similar to the directives of the **C** and **C++** preprocessor.
+Directives of **spp** are almost identical to the directives of the **C** and **C++** preprocessor:
 
-**Synopsis:** `[whitespace]#<command>[<whitespace><argument>]`
+<!-- TODO: instead of "directive name" -> "instruction" ? -->
+```txt
+    directive name
+           │
+           │       ┌──argument(s)
+prefix──┐┌─┴──┐ ┌──┴──┐
+        #define foo bar
+        └──────┬──────┘
+               │
+           directive
+```
 
-_WHITESPACE_ may be either spaces or tabs.  
-_COMMAND_ may be any characters BUT spaces and tabs.  
-_ARGUMENT_ may be ANY character. Note that trailing whitespace will also count to the argument.
+The directive may be preceded by any amount of whitespace characters.  
+The instruction name must immediately follow the directive prefix.  
+How the argument(s) is/are interpreted depends on the instruction.  
+Whitespace characters after the instruction name do *not* count towards the argument(s).
+The whitespace between the instruction name and the argument(s), and any trailing
+Trailing whitespace is stripped away.
 
-The following commands are defined:
-
-* `insert <file>`  
-  Inserts contents of _FILE_ into this position.
-* `include <file>`  
-  Inserts contents of _FILE_ into this position after running **spp** through it.
-* `ignore` and `end-ignore`  
-  Delete this and the following lines from the final output until `end-ignore` is seen.
-* `ignorenext`  
-  Deletes this and the following line from the final output.
+A list of available instructions can be found in [`Instructions.md`](Instructions.md).
 
 ## Installation ##
+
+**spp** needs to be manually built and installed:
 
 ```sh
 git clone https://github.com/mfederczuk/spp.git &&

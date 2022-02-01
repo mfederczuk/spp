@@ -8,6 +8,8 @@ and this project adheres to [**Semantic Versioning v2.0.0**](https://semver.org/
 
 ## Unreleased ##
 
+The entire code base was completely re-written.
+
 ### Added ###
 
 * Multiple files can now be processed at the same time, instead of just one
@@ -16,6 +18,19 @@ and this project adheres to [**Semantic Versioning v2.0.0**](https://semver.org/
   * `--output` - redirect output to another file
   * `--truncate` - truncate output file
   * `--append` - append to output file
+* instructions
+  * `exclude`
+  * `endexclude`
+
+### Changed ###
+
+* whitespace at the end of directive arguments do not count anymore to the argument
+
+### Removed ###
+
+* `ignore` instruction - replaced with `exclude`
+* `end-ignore` instruction - replaced with `endexclude`
+* `ignorenext` instruction - replaced with `exclude 1`
 
 ## [v0.1.1] - 2021-10-16 ##
 
