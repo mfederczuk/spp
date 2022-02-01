@@ -43,6 +43,21 @@
 #endif
 
 
+static inline int main_open_output_file(
+	const_cstr_t argv0,
+	const_cstr_t output_file_path,
+	enum spp_options_cli_output_mode output_mode,
+	const_cstr_t* input_file_paths,
+	size_t input_file_paths_size
+);
+
+static inline int main_open_input_files(
+	const_cstr_t argv0,
+	const_cstr_t* input_file_paths,
+	size_t input_file_paths_size
+);
+
+
 static inline void print_invalid_option_identifier_message(
 	const_cstr_t argv0,
 	const struct spp_arg_parsing_result_invalid_option_identifier* invalid_option_identifier
@@ -99,30 +114,50 @@ int main(const int argc, const cstr_t* const argv) {
 	}
 
 
-	// checking and opening the output file
+	const int exc = main_open_output_file(
+		argv[0],
+		result.normal_execution.cli.options_cli.output,
+		result.normal_execution.cli.options_cli.output_mode,
+		result.normal_execution.cli.input_files,
+		result.normal_execution.cli.input_files_size
+	);
+
+
+	free(result.normal_execution.cli.input_files);
+
+
+	return exc;
+}
+
+static inline int main_open_output_file(
+	const const_cstr_t argv0,
+	const const_cstr_t output_file_path,
+	const enum spp_options_cli_output_mode output_mode,
+	const_cstr_t* const input_file_paths,
+	const size_t input_file_paths_size
+) {
 	FILE* output_stream;
-	if(result.normal_execution.cli.options_cli.output == NULL) {
+
+	if(output_file_path == NULL) {
 		debug_log("no output file specified; defaulting to stdout");
 		output_stream = stdout;
 	} else {
 		struct stat statbuf;
 		errno = 0;
-		if(stat(result.normal_execution.cli.options_cli.output, &statbuf) == 0 && errno == 0) {
+		if(stat(output_file_path, &statbuf) == 0 && errno == 0) {
 			// checking if the given output file is not a directory
 			// we should be able work with everything except directories, so we just check for that
 			if(S_ISDIR(statbuf.st_mode)) {
-				free(result.normal_execution.cli.input_files);
-				fprintf(stderr, "%s: %s: not a file\n", argv[0], result.normal_execution.cli.options_cli.output);
+				fprintf(stderr, "%s: %s: not a file\n", argv0, output_file_path);
 				return 26;
 			}
 
 			// checking if the current user has access to the given output file
 			errno = 0;
-			if(access(result.normal_execution.cli.options_cli.output, W_OK) != 0 || errno != 0) {
-				free(result.normal_execution.cli.input_files);
+			if(access(output_file_path, W_OK) != 0 || errno != 0) {
 				return print_access_error_message(
-					argv[0],
-					result.normal_execution.cli.options_cli.output,
+					argv0,
+					output_file_path,
 					"write permission missing"
 				);
 			}
@@ -131,101 +166,99 @@ int main(const int argc, const cstr_t* const argv) {
 			// the file itself doesn't exist or the directory that was given
 
 			errno = 0;
-			const cstr_t output_file_dup = strdup(result.normal_execution.cli.options_cli.output);
-			spp_if_unlikely(output_file_dup == NULL || errno != 0) {
-				free(result.normal_execution.cli.input_files);
-
-				fprintf(stderr, "%s: not enough heap memory\n", argv[0]);
-
+			const cstr_t output_file_path_dup = strdup(output_file_path);
+			spp_if_unlikely(output_file_path_dup == NULL || errno != 0) {
+				fprintf(stderr, "%s: not enough heap memory\n", argv0);
 				return 101;
 			}
 
-			const const_cstr_t output_file_parent_dir = dirname(output_file_dup);
+			const const_cstr_t output_file_parent_dir_path = dirname(output_file_path_dup);
 
 			errno = 0;
-			if(stat(output_file_parent_dir, &statbuf) != 0 || errno != 0) {
-				free(result.normal_execution.cli.input_files);
-
-				const int exc = print_stat_error_message(argv[0], output_file_parent_dir);
-
-				free(output_file_dup);
-
+			if(stat(output_file_parent_dir_path, &statbuf) != 0 || errno != 0) {
+				const int exc = print_stat_error_message(argv0, output_file_parent_dir_path);
+				free(output_file_path_dup);
 				return exc;
 			}
 
 			if(!S_ISDIR(statbuf.st_mode)) {
-				free(result.normal_execution.cli.input_files);
-
-				fprintf(stderr, "%s: %s: not a directory\n", argv[0], output_file_parent_dir);
-
-				free(output_file_dup);
-
+				fprintf(stderr, "%s: %s: not a directory\n", argv0, output_file_parent_dir_path);
+				free(output_file_path_dup);
 				return 26;
 			}
 
 			errno = 0;
-			if(access(output_file_parent_dir, W_OK | X_OK) != 0 || errno != 0) {
-				free(result.normal_execution.cli.input_files);
-
+			if(access(output_file_parent_dir_path, W_OK | X_OK) != 0 || errno != 0) {
 				const int exc = print_access_error_message(
-					argv[0],
-					output_file_parent_dir,
+					argv0,
+					output_file_parent_dir_path,
 					"write or search permission missing"
 				);
 
-				free(output_file_dup);
+				free(output_file_path_dup);
 
 				return exc;
 			}
 
+			free(output_file_path_dup);
+
 			debug_log("output file does not exist; will be created");
 		} else {
-			free(result.normal_execution.cli.input_files);
-			return print_stat_error_message(argv[0], result.normal_execution.cli.options_cli.output);
+			return print_stat_error_message(argv0, output_file_path);
 		}
 
 		// actually opening the output file
 		errno = 0;
-		switch(result.normal_execution.cli.options_cli.output_mode) {
+		switch(output_mode) {
 			case(SPP_OPTIONS_CLI_OUTPUT_MODE_TRUNCATE): {
 				debug_log("truncating output file");
-				output_stream = fopen(result.normal_execution.cli.options_cli.output, "w");
+				output_stream = fopen(output_file_path, "w");
 				break;
 			}
 			case(SPP_OPTIONS_CLI_OUTPUT_MODE_APPEND): {
 				debug_log("appending to output file");
-				output_stream = fopen(result.normal_execution.cli.options_cli.output, "a");
+				output_stream = fopen(output_file_path, "a");
 				break;
 			}
 		}
 
 		if(output_stream == NULL || errno != 0) {
-			free(result.normal_execution.cli.input_files);
-
-			// casting `const_cstr_t` to `cstr_t` because fuck const-safety, exiting the program at this point anyway
-			return print_fopen_error_message(argv[0], (cstr_t)result.normal_execution.cli.options_cli.output);
+			// casting `const_cstr_t` to `cstr_t` because fuck const-safety; exiting the program after this point anyway
+			return print_fopen_error_message(argv0, (cstr_t)output_file_path);
 		}
 	}
 
 
-	// checking and opening the input files
+	const int exc = main_open_input_files(
+		argv0,
+		input_file_paths,
+		input_file_paths_size
+	);
 
+
+	if(output_stream != stdout) {
+		fclose(output_stream);
+	}
+
+
+	return exc;
+}
+
+static inline int main_open_input_files(
+	const const_cstr_t argv0,
+	const_cstr_t* const input_file_paths,
+	const size_t input_file_paths_size
+) {
 	struct spp_input_file* opened_input_files;
 
-	if(result.normal_execution.cli.input_files_size == 0) {
+	if(input_file_paths_size == 0) {
 		debug_log("no input files specified; defaulting to stdin");
 		opened_input_files = NULL;
 	} else {
 		errno = 0;
-		opened_input_files = malloc(sizeof(*opened_input_files) * (result.normal_execution.cli.input_files_size + 1));
-		spp_if_unlikely(opened_input_files == NULL || errno != 0) {
-			if(output_stream != stdout) {
-				fclose(output_stream);
-			}
-			free(result.normal_execution.cli.input_files);
-
-			fprintf(stderr, "%s: not enough memory\n", argv[0]);
-
+		opened_input_files = malloc(sizeof(*opened_input_files) * (input_file_paths_size + 1));
+		spp_if_unlikely(opened_input_files == NULL || errno == ENOMEM) {
+			fprintf(stderr, "%s: not enough memory\n", argv0);
 			return 101;
 		}
 
@@ -234,8 +267,8 @@ int main(const int argc, const cstr_t* const argv) {
 		const_cstr_t input_file;
 		struct stat statbuf;
 
-		for(size_t i = 0; i < result.normal_execution.cli.input_files_size; ++i) {
-			input_file = result.normal_execution.cli.input_files[i];
+		for(size_t i = 0; i < input_file_paths_size; ++i) {
+			input_file = input_file_paths[i];
 			if(strcmp(input_file, "-") == 0) {
 				if(!has_stdin) {
 					debug_log("first '-' argument encountered; adding stdin as input file");
@@ -260,15 +293,7 @@ int main(const int argc, const cstr_t* const argv) {
 					}
 					free(opened_input_files);
 
-					if(output_stream != stdout) {
-						fclose(output_stream);
-					}
-
-					const int exc = print_stat_error_message(argv[0], input_file);
-
-					free(result.normal_execution.cli.input_files);
-
-					return exc;
+					return print_stat_error_message(argv0, input_file);
 				}
 
 				if(S_ISDIR(statbuf.st_mode)) {
@@ -280,13 +305,7 @@ int main(const int argc, const cstr_t* const argv) {
 					}
 					free(opened_input_files);
 
-					if(output_stream != stdout) {
-						fclose(output_stream);
-					}
-
-					fprintf(stderr, "%s: %s: not a file\n", argv[0], input_file);
-
-					free(result.normal_execution.cli.input_files);
+					fprintf(stderr, "%s: %s: not a file\n", argv0, input_file);
 
 					return 26;
 				}
@@ -302,19 +321,11 @@ int main(const int argc, const cstr_t* const argv) {
 					}
 					free(opened_input_files);
 
-					if(output_stream != stdout) {
-						fclose(output_stream);
-					}
-
-					const int exc = print_access_error_message(
-						argv[0],
+					return print_access_error_message(
+						argv0,
 						input_file,
 						"read permission missing"
 					);
-
-					free(result.normal_execution.cli.input_files);
-
-					return exc;
 				}
 
 
@@ -333,16 +344,8 @@ int main(const int argc, const cstr_t* const argv) {
 					}
 					free(opened_input_files);
 
-					if(output_stream != stdout) {
-						fclose(output_stream);
-					}
-
 					// once again; fuck const-safety
-					const int exc = print_fopen_error_message(argv[0], (cstr_t)input_file);
-
-					free(result.normal_execution.cli.input_files);
-
-					return exc;
+					return print_fopen_error_message(argv0, (cstr_t)input_file);
 				}
 
 				++opened_input_file_it;
@@ -353,12 +356,12 @@ int main(const int argc, const cstr_t* const argv) {
 
 		#ifndef NDEBUG
 		const size_t opened_input_files_size = (opened_input_file_it - opened_input_files);
-		if(result.normal_execution.cli.input_files_size == opened_input_files_size) {
+		if(input_file_paths_size == opened_input_files_size) {
 			debug_logf("%zu input file(s) opened", opened_input_files_size);
 		} else {
 			debug_logf(
 				"%zu given input file(s);  %zu actually opened",
-				result.normal_execution.cli.input_files_size,
+				input_file_paths_size,
 				opened_input_files_size
 			);
 		}
@@ -366,10 +369,10 @@ int main(const int argc, const cstr_t* const argv) {
 	}
 
 
-	// TODO
+	// TODO process files
 
 
-	if(result.normal_execution.cli.input_files_size > 0) {
+	if(input_file_paths_size > 0) {
 		for(struct spp_input_file* opened_input_file_it = opened_input_files; opened_input_file_it->stream != NULL; ++opened_input_file_it) {
 			if(opened_input_file_it->stream != stdin) {
 				fclose(opened_input_file_it->stream);
@@ -378,12 +381,6 @@ int main(const int argc, const cstr_t* const argv) {
 
 		free(opened_input_files);
 	}
-
-	if(output_stream != stdout) {
-		fclose(output_stream);
-	}
-
-	free(result.normal_execution.cli.input_files);
 
 	return 0;
 }
