@@ -25,6 +25,7 @@
 #include <spp/debug.h>
 #include <spp/spp.h>
 #include <spp/types.h>
+#include <spp/utils.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -285,6 +286,8 @@ static inline int main_open_input_files(
 			} else {
 				errno = 0;
 				if(stat(input_file, &statbuf) != 0 || errno != 0) {
+					errno_push();
+
 					--opened_input_file_it;
 					for(; opened_input_file_it >= opened_input_files; --opened_input_file_it) {
 						if(opened_input_file_it->stream != stdin) {
@@ -292,6 +295,8 @@ static inline int main_open_input_files(
 						}
 					}
 					free(opened_input_files);
+
+					errno_pop();
 
 					return print_stat_error_message(argv0, input_file);
 				}
@@ -313,6 +318,8 @@ static inline int main_open_input_files(
 
 				errno = 0;
 				if(access(input_file, R_OK) != 0 || errno != 0) {
+					errno_push();
+
 					--opened_input_file_it;
 					for(; opened_input_file_it >= opened_input_files; --opened_input_file_it) {
 						if(opened_input_file_it->stream != stdin) {
@@ -320,6 +327,8 @@ static inline int main_open_input_files(
 						}
 					}
 					free(opened_input_files);
+
+					errno_pop();
 
 					return print_access_error_message(
 						argv0,
@@ -336,6 +345,8 @@ static inline int main_open_input_files(
 				};
 
 				if(opened_input_file_it->stream == NULL || errno != 0) {
+					errno_push();
+
 					--opened_input_file_it;
 					for(; opened_input_file_it >= opened_input_files; --opened_input_file_it) {
 						if(opened_input_file_it->stream != stdin) {
@@ -343,6 +354,8 @@ static inline int main_open_input_files(
 						}
 					}
 					free(opened_input_files);
+
+					errno_pop();
 
 					// once again; fuck const-safety
 					return print_fopen_error_message(argv0, (cstr_t)input_file);
@@ -530,8 +543,14 @@ static inline int print_stat_error_message(const const_cstr_t argv0, const const
 			return 48;
 		}
 		default: {
+			debug_errno_push();
+
 			fprintf(stderr, "%s: unknown error\n", argv0);
+
+			debug_errno_pop();
+
 			debug_perror("stat");
+
 			return 125;
 		}
 	}
@@ -600,8 +619,14 @@ static inline int print_access_error_message(
 			return 49;
 		}
 		default: {
+			debug_errno_push();
+
 			fprintf(stderr, "%s: unknown error\n", argv0);
+
+			debug_errno_pop();
+
 			debug_perror("access");
+
 			return 125;
 		}
 	}
@@ -689,8 +714,14 @@ static inline int print_fopen_error_message(const const_cstr_t argv0, const cstr
 			return 49;
 		}
 		default: {
+			debug_errno_push();
+
 			fprintf(stderr, "%s: unknown error\n", argv0);
+
+			debug_errno_pop();
+
 			debug_perror("open");
+
 			return 125;
 		}
 	}
